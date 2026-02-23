@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Take Attendance | Greenfield SMS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* =========================
+           ANIMATED BACKGROUND
+        ==========================*/
+        .slideshow {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; overflow: hidden;
+        }
+        .slide {
+            position: absolute; width: 100%; height: 100%;
+            background-size: cover; background-position: center;
+            opacity: 0; animation: fadeSlide 30s linear infinite;
+        }
+        .slide:nth-child(1) { background-image: url('/images/1.jpg'); animation-delay: 0s; }
+        .slide:nth-child(2) { background-image: url('/images/2.jpg'); animation-delay: 6s; }
+        .slide:nth-child(3) { background-image: url('/images/3.jpg'); animation-delay: 12s; }
+        .slide:nth-child(4) { background-image: url('/images/4.jpg'); animation-delay: 18s; }
+        .slide:nth-child(5) { background-image: url('/images/5.jpg'); animation-delay: 24s; }
+
+        @keyframes fadeSlide {
+            0%, 100% { opacity: 0; }
+            10%, 20% { opacity: 1; }
+            30% { opacity: 0; }
+        }
+        .slideshow::after {
+            content: ""; position: absolute; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.65);
+        }
+
+        /* =========================
+           GREENFIELD SMS STYLING
+        ==========================*/
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; min-height: 100vh; color: white; }
+        .container { width: 95%; max-width: 800px; margin: 50px auto; }
+        
+        h2 { color: #ffffff; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        
+        .card { 
+            background: rgba(255, 255, 255, 0.15); 
+            backdrop-filter: blur(14px); 
+            padding: 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4); 
+            border: 1px solid rgba(255,255,255,0.2); 
+        }
+        
+        /* Matching the "Info Box" from your Curriculum Code */
+        .info-box { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; margin-bottom: 25px; }
+        .info-label { font-size: 0.75rem; text-transform: uppercase; color: #a5d6a7; font-weight: bold; letter-spacing: 0.05em; }
+        .info-value { font-size: 1.1rem; color: #ffffff; font-weight: 600; }
+
+        .form-row { display: flex; gap: 15px; align-items: flex-end; margin-bottom: 20px; }
+        .form-group { flex: 1; }
+        label { display: block; margin-bottom: 8px; font-weight: 500; font-size: 0.9rem; color: #e2e8f0; }
+
+        select, input[type="date"] {
+            width: 100%; padding: 12px; border-radius: 6px; border: none;
+            background: rgba(255,255,255,0.9); font-size: 1rem; color: #1e293b;
+        }
+
+        /* List Styling following your Curriculum Style */
+        .student-list { max-height: 400px; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: 8px; padding: 5px; }
+        .student-item { 
+            display: flex; align-items: center; padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); 
+            transition: background 0.2s; 
+        }
+        .student-item:last-child { border-bottom: none; }
+        .student-item:hover { background: rgba(255,255,255,0.05); }
+        
+        .student-item input[type="checkbox"] { width: 19px; height: 19px; margin-right: 15px; cursor: pointer; accent-color: #4ade80; }
+        .student-info { flex-grow: 1; display: flex; flex-direction: column; }
+        .student-name { font-weight: 500; font-size: 1rem; }
+        .student-meta { font-size: 0.75rem; color: #cbd5e1; }
+
+        .actions { display: flex; gap: 10px; margin-top: 25px; }
+        button { 
+            background-color: #228b22; color: white; border: none; padding: 14px 24px; 
+            border-radius: 6px; cursor: pointer; font-weight: 600; flex-grow: 2; transition: 0.3s; 
+        }
+        button:hover { background-color: #006400; transform: translateY(-1px); }
+        .btn-load { background-color: #1e3a8a; flex-grow: 1; padding: 12px; }
+
+        .success { background-color: rgba(16, 185, 129, 0.8); color: white; padding: 12px; border-radius: 6px; margin-bottom: 15px; }
+        .error { background-color: rgba(239, 68, 68, 0.8); color: white; padding: 12px; border-radius: 6px; margin-bottom: 15px; }
+    </style>
+</head>
+
+<body>
+
+<div class="slideshow">
+    <div class="slide"></div><div class="slide"></div><div class="slide"></div>
+    <div class="slide"></div><div class="slide"></div>
+</div>
+
+<div class="container">
+
+    <h2><i class="fas fa-calendar-check"></i> Take Attendance</h2>
+
+    <div class="card">
+        <div th:if="${success}" class="success">
+            <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+        </div>
+
+        <form method="get" th:action="@{/teacher/attendance/take}">
+            <div class="form-row">
+                <div class="form-group">
+                    <label><i class="fas fa-school"></i> Select Class</label>
+                    <select name="classCode" required>
+                        <option value="">Choose Class...</option>
+                        <option th:each="cls : ${allClasses}" 
+                                th:value="${cls.classCode}" 
+                                th:text="${cls.className}"
+                                th:selected="${selectedClassCode == cls.classCode}">Grade 1</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-clock"></i> Date</label>
+                    <input type="date" name="date" th:value="${date != null} ? ${date} : ${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" required/>
+                </div>
+                <button type="submit" class="btn-load">Load List</button>
+            </div>
+        </form>
+
+        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 25px 0;">
+
+        <form th:if="${students != null}" th:action="@{/teacher/attendance/save}" method="post">
+            
+            <div class="info-box">
+                <div class="info-label">Active Session</div>
+                <div class="info-value" th:text="${selectedClassName}">Grade 1 - North Wing</div>
+                <div style="font-size: 0.85rem; color: #cbd5e1; margin-top: 4px;">
+                    Date: <span th:text="${date}">2026-02-15</span> | 
+                    Code: <span th:text="${selectedClassCode}">G1-N</span>
+                </div>
+            </div>
+
+            <input type="hidden" name="classCode" th:value="${selectedClassCode}">
+            <input type="hidden" name="date" th:value="${date}">
+
+            <label style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <span class="info-label">Student Registry</span>
+                <span style="font-size: 0.8rem; color: #4ade80; cursor: pointer;" onclick="toggleAll(true)">Mark All Present</span>
+            </label>
+
+            <div class="student-list">
+                <div th:each="student : ${students}" class="student-item">
+                    <input type="checkbox" 
+                           name="presentStudentIds" 
+                           th:value="${student.id}" 
+                           th:id="'std-' + ${student.id}"
+                           th:checked="${presentStudentIds != null && presentStudentIds.contains(student.id)}">
+                    
+                    <label class="student-info" th:for="'std-' + ${student.id}">
+                        <span class="student-name" th:text="${student.firstName + ' ' + student.lastName}">John Doe</span>
+                        <span class="student-meta" th:text="${'ID: ' + student.studentId}">ID: 2026001</span>
+                    </label>
+                </div>
+
+                <div th:if="${#lists.isEmpty(students)}" style="padding: 30px; text-align: center; color: #cbd5e1;">
+                    <i class="fas fa-user-slash" style="display: block; font-size: 2rem; margin-bottom: 10px;"></i>
+                    No students enrolled in this class.
+                </div>
+            </div>
+
+            <div class="actions">
+                <button type="submit">Save Attendance Record</button>
+            </div>
+        </form>
+
+        <div th:if="${students == null}" style="text-align: center; padding: 40px 20px;">
+            <i class="fas fa-clipboard-list" style="font-size: 3.5rem; color: rgba(255,255,255,0.2); margin-bottom: 15px;"></i>
+            <p style="color: #cbd5e1;">Select a class and date above to load the student registry.</p>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function toggleAll(checked) {
+        const checkboxes = document.querySelectorAll('input[name="presentStudentIds"]');
+        checkboxes.forEach(cb => cb.checked = checked);
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+<title th:text="${pageTitle} != null ? ${pageTitle} : 'Admin Dashboard'">Admin Dashboard</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+/* ---------- PROFESSIONAL ADMIN DASHBOARD – MOBILE FIRST, FULLY RESPONSIVE ---------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-base: #4f46e5;
+    --primary-light: #6366f1;
+    --primary-dark: #4338ca;
+    --primary-soft: #eef2ff;
+    --sidebar-bg: #0f172a;
+    --sidebar-hover: #1e293b;
+    --sidebar-text: #f1f5f9;
+    --sidebar-muted: #94a3b8;
+    --bg-main: #f8fafc;
+    --card-bg: #ffffff;
+    --border-light: #e2e8f0;
+    --text-heading: #0f172a;
+    --text-body: #334155;
+    --text-muted: #64748b;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.05);
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    --transition: all 0.2s ease;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg-main);
+    color: var(--text-body);
+    line-height: 1.5;
+    overflow-x: hidden;
+}
+
+/* ===== MOBILE-FIRST LAYOUT ===== */
+.admin-container {
+    min-height: 100vh;
+    position: relative;
+}
+
+/* --- Mobile header with menu toggle (hidden on desktop) --- */
+.mobile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: white;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border-light);
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    box-shadow: var(--shadow-md);
+}
+
+.mobile-header .school-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    color: var(--text-heading);
+}
+
+.mobile-header .school-logo i {
+    color: var(--primary-base);
+    font-size: 1.5rem;
+}
+
+.menu-toggle {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    color: var(--text-heading);
+    cursor: pointer;
+    padding: 0.25rem;
+    touch-action: manipulation;
+}
+
+/* Hide the checkbox */
+#sidebarToggle {
+    display: none;
+}
+
+/* --- Sidebar – off-canvas on mobile, fixed on desktop --- */
+.admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    width: 280px;
+    height: 100vh;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    overflow-y: auto;
+    transition: left 0.3s ease;
+    z-index: 100;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.2);
+}
+
+#sidebarToggle:checked ~ .admin-sidebar {
+    left: 0;
+}
+
+/* Overlay when sidebar is open (mobile) */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    z-index: 90;
+}
+
+#sidebarToggle:checked ~ .sidebar-overlay {
+    display: block;
+}
+
+/* Sidebar content (unchanged) */
+.sidebar-header {
+    padding: 1.5rem 1.5rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.school-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: white;
+}
+.school-logo i {
+    color: var(--primary-light);
+    font-size: 1.5rem;
+}
+.portal-version {
+    font-size: 0.7rem;
+    color: var(--sidebar-muted);
+    margin-top: 0.5rem;
+    margin-left: 2.25rem;
+    opacity: 0.8;
+}
+
+.user-profile {
+    padding: 1.5rem 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    text-align: center;
+}
+.user-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-base), #818cf8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.6rem;
+    margin: 0 auto 1rem;
+    color: white;
+    box-shadow: 0 8px 16px -4px rgba(79,70,229,0.3);
+}
+.user-info h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+}
+.user-info p {
+    font-size: 0.8rem;
+    color: var(--sidebar-muted);
+}
+.user-role {
+    font-size: 0.7rem;
+    background: var(--primary-base);
+    padding: 0.3rem 1rem;
+    border-radius: 30px;
+    display: inline-block;
+    margin-top: 0.7rem;
+    font-weight: 600;
+    color: white;
+}
+
+.sidebar-nav {
+    padding: 1.5rem 0.8rem;
+}
+.nav-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0.7rem 1.2rem;
+    border-radius: var(--radius-lg);
+    font-weight: 500;
+    color: var(--sidebar-muted);
+    gap: 0.8rem;
+    min-height: 44px;
+}
+.nav-link i {
+    width: 1.5rem;
+    font-size: 1rem;
+    color: var(--sidebar-muted);
+}
+.nav-link:hover, .nav-link.active {
+    background: var(--sidebar-hover);
+    color: white;
+}
+.nav-link.active i {
+    color: white;
+}
+
+/* --- Main content – adjusts for sidebar on desktop --- */
+.admin-main {
+    transition: margin-left 0.3s ease;
+    padding: 1rem;
+}
+
+/* Desktop styles (overrides mobile) */
+@media (min-width: 992px) {
+    .mobile-header {
+        display: none;
+    }
+    .admin-sidebar {
+        left: 0;
+        position: fixed;
+    }
+    .sidebar-overlay {
+        display: none !important;
+    }
+    .admin-main {
+        margin-left: 280px;
+        padding: 2rem 2.5rem;
+    }
+}
+
+/* ===== HEADER (desktop only) ===== */
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+.admin-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-heading);
+}
+.admin-header p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+.header-meta {
+    text-align: right;
+}
+.current-time, .weather-info {
+    font-size: 0.9rem;
+    padding: 0.4rem 1rem;
+    border-radius: 30px;
+    display: inline-block;
+}
+.current-time {
+    color: var(--primary-base);
+    background: var(--primary-soft);
+}
+.weather-info {
+    color: var(--warning);
+    background: #fffbeb;
+    border: 1px solid #fef3c7;
+    margin-top: 0.5rem;
+}
+
+/* ===== SEARCH BAR ===== */
+.search-bar {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+.search-bar input {
+    flex: 1;
+    padding: 0.8rem 1.5rem;
+    border-radius: 50px;
+    border: 1px solid var(--border-light);
+    background: white;
+    font-size: 0.95rem;
+    box-shadow: var(--shadow-md);
+}
+.search-bar input:focus {
+    border-color: var(--primary-base);
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(79,70,229,0.08);
+}
+.search-bar button {
+    padding: 0.8rem 1.8rem;
+    border: none;
+    border-radius: 50px;
+    background: linear-gradient(145deg, var(--primary-base), var(--primary-dark));
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    touch-action: manipulation;
+}
+
+/* ===== CHARTS GRID ===== */
+.dashboard-content-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+.content-card {
+    background: var(--card-bg);
+    border-radius: var(--radius-xl);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-light);
+}
+.content-card h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-heading);
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.content-card canvas {
+    max-height: 200px;
+    width: 100% !important;
+}
+
+/* ===== STATS CARDS ===== */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+.stat-card {
+    background: var(--card-bg);
+    border-radius: var(--radius-xl);
+    padding: 1.2rem;
+    box-shadow: var(--shadow-md);
+    border-left: 4px solid var(--primary-base);
+}
+.stat-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+.stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-heading);
+    line-height: 1.2;
+}
+
+/* ===== QUICK ACTIONS ===== */
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+    margin-bottom: 2rem;
+}
+.action-card {
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    padding: 1rem 0.5rem;
+    text-align: center;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-light);
+    transition: var(--transition);
+    touch-action: manipulation;
+}
+.action-card i {
+    font-size: 1.8rem;
+    color: var(--primary-base);
+    background: var(--primary-soft);
+    padding: 0.6rem;
+    border-radius: 16px;
+    margin-bottom: 0.5rem;
+}
+.action-card h3 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-heading);
+}
+
+/* ===== NOTIFICATIONS & MESSAGES ===== */
+.notification-list, .message-list {
+    list-style: none;
+}
+.notification-list li, .message-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--border-light);
+    font-size: 0.9rem;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+}
+.notification-list small {
+    color: var(--text-muted);
+    background: #f1f5f9;
+    padding: 0.2rem 0.6rem;
+    border-radius: 30px;
+    white-space: nowrap;
+}
+
+/* ===== FOOTER ===== */
+.admin-footer {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    padding: 1.5rem 0 0.5rem;
+    border-top: 1px solid var(--border-light);
+    margin-top: 2rem;
+}
+
+/* ===== SMALL SCREEN TWEAKS ===== */
+@media (max-width: 576px) {
+    .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    .header-meta {
+        text-align: left;
+        width: 100%;
+    }
+    .current-time, .weather-info {
+        white-space: normal;
+        font-size: 0.8rem;
+        padding: 0.3rem 0.8rem;
+    }
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    .quick-actions-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .search-bar {
+        flex-direction: column;
+    }
+    .search-bar button {
+        width: 100%;
+        justify-content: center;
+    }
+    .content-card {
+        padding: 1.2rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .quick-actions-grid {
+        grid-template-columns: 1fr;
+    }
+    .action-card {
+        flex-direction: row;
+        justify-content: flex-start;
+        text-align: left;
+        padding: 0.8rem 1rem;
+        gap: 1rem;
+    }
+    .action-card i {
+        margin-bottom: 0;
+    }
+}
+
+/* Utilities */
+*:focus-visible {
+    outline: 2px solid var(--primary-base);
+    outline-offset: 2px;
+}
+</style>
+
+<script>
+    // Real-time clock
+    function updateTime() {
+        const timeElement = document.getElementById('currentTime');
+        const now = new Date();
+        const options = { weekday:'short', year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true };
+        timeElement.textContent = now.toLocaleDateString('en-US', options);
+    }
+    setInterval(updateTime, 1000);
+    window.onload = () => {
+        updateTime();
+        fetchWeather();
+    };
+
+    // Weather widget (fallback)
+    async function fetchWeather() {
+        const apiKey = 'YOUR_API_KEY'; // replace with actual key
+        const city = 'Iten';
+        const weatherElement = document.getElementById('weatherInfo');
+        try {
+            const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`);
+            const data = await response.json();
+            if (data.main) {
+                weatherElement.textContent = `${data.weather[0].description}, ${Math.round(data.main.temp)}°C`;
+            } else {
+                weatherElement.textContent = '⛅ Partly cloudy, 22°C';
+            }
+        } catch (error) {
+            weatherElement.textContent = '🌤️ Iten, 22°C';
+        }
+    }
+</script>
+
+</head>
+<body>
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<!-- Checkbox for mobile menu toggle -->
+<input type="checkbox" id="sidebarToggle">
+
+<!-- Mobile header (visible only on small screens) -->
+<div class="mobile-header">
+    <div class="school-logo">
+        <i class="fas fa-school"></i> 
+        <span>Green-Field School</span>
+    </div>
+    <label for="sidebarToggle" class="menu-toggle" aria-label="Toggle menu">
+        <i class="fas fa-bars"></i>
+    </label>
+</div>
+
+<!-- Sidebar -->
+<aside class="admin-sidebar">
+    <div class="sidebar-header">
+        <a th:href="@{/admin/dashboard}" class="school-logo">
+            <i class="fas fa-school"></i> 
+            <span>Green-Field School</span>
+        </a>
+        <div class="portal-version">Admin Portal v2.6</div>
+    </div>
+
+    <div class="user-profile">
+        <div class="user-avatar" th:text="${user?.firstName?.substring(0,1) ?: 'A'} + ${user?.lastName?.substring(0,1) ?: 'D'}">AD</div>
+        <div class="user-info">
+            <h4 th:text="${user?.firstName} + ' ' + ${user?.lastName} ?: 'Admin User'">Admin User</h4>
+            <p th:text="${user?.email} ?: 'admin@school.edu'">admin@school.edu</p>
+            <span class="user-role" th:text="${user?.role} ?: 'School Admin'">School Admin</span>
+        </div>
+    </div>
+
+    <nav class="sidebar-nav">
+        <ul class="nav-menu">
+            <li><a th:href="@{/admin/dashboard}" class="nav-link active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a th:href="@{/admin/students}" class="nav-link"><i class="fas fa-user-graduate"></i> Students</a></li>
+            <li><a th:href="@{/admin/teachers}" class="nav-link"><i class="fas fa-chalkboard-teacher"></i> Teachers</a></li>
+            <li><a th:href="@{/admin/classes}" class="nav-link"><i class="fas fa-chalkboard"></i> Classes</a></li>
+            <li><a th:href="@{/admin/subjects}" class="nav-link"><i class="fas fa-book"></i> Subjects</a></li>
+            <li><a th:href="@{/admin/attendance}" class="nav-link"><i class="fas fa-clipboard-check"></i> Attendance</a></li>
+            <li><a th:href="@{/admin/exams}" class="nav-link"><i class="fas fa-file-contract"></i> Exams</a></li>
+            <li><a th:href="@{/admin/settings-dashboard}" class="nav-link"><i class="fas fa-cog"></i> Settings</a></li>
+            <li><a th:href="@{/logout}" class="nav-link"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </nav>
+</aside>
+
+<!-- Overlay (click to close sidebar on mobile) -->
+<label for="sidebarToggle" class="sidebar-overlay"></label>
+
+<!-- Main Content -->
+<main class="admin-main">
+    <header class="admin-header">
+        <div>
+            <h1 th:text="${pageTitle} != null ? ${pageTitle} : 'Admin Dashboard'">Admin Dashboard</h1>
+            <p>Welcome back! Here's what's happening today.</p>
+        </div>
+        <div class="header-meta">
+            <div class="current-time"><i class="far fa-clock" style="margin-right: 6px;"></i> <span id="currentTime"></span></div>
+            <div class="weather-info"><i class="fas fa-cloud-sun" style="margin-right: 6px;"></i> <span id="weatherInfo">Loading...</span></div>
+        </div>
+    </header>
+
+    <div class="search-bar">
+        <input type="text" placeholder="Search students, teachers, or classes..." />
+        <button><i class="fas fa-search"></i> Search</button>
+    </div>
+    
+    <!-- Charts -->
+    <div class="dashboard-content-grid">
+        <div class="content-card">
+            <h2><i class="fas fa-chart-pie"></i> School Overview</h2>
+            <canvas id="overviewChart"></canvas>
+        </div>
+        <div class="content-card">
+            <h2><i class="fas fa-chart-line"></i> Finance Overview</h2>
+            <canvas id="financeChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="dashboard-grid">
+        <div class="stat-card"><div class="stat-title">Total Students</div><div class="stat-value" th:text="${dashboardStats?.studentCount} ?: 486">486</div></div>
+        <div class="stat-card"><div class="stat-title">Total Teachers</div><div class="stat-value" th:text="${dashboardStats?.teacherCount} ?: 42">42</div></div>
+        <div class="stat-card"><div class="stat-title">Active Classes</div><div class="stat-value" th:text="${dashboardStats?.classCount} ?: 24">24</div></div>
+        <div class="stat-card"><div class="stat-title">Monthly Revenue</div><div class="stat-value" th:text="${dashboardStats?.monthlyRevenue} ?: '$124.5K'">$124.5K</div></div>
+        <div class="stat-card"><div class="stat-title">Pending Fees</div><div class="stat-value" th:text="${dashboardStats?.pendingFees} ?: '$28.2K'">$28.2K</div></div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions-grid">
+        <a th:href="@{/admin/students/new}" class="action-card"><i class="fas fa-user-plus"></i><h3>Add Student</h3></a>
+        <a th:href="@{/admin/teachers}" class="action-card"><i class="fas fa-chalkboard-teacher"></i><h3>Add Teacher</h3></a>
+        <a th:href="@{/admin/subjects}" class="action-card"><i class="fas fa-book"></i><h3>Add Subject</h3></a>
+        <a th:href="@{/admin/employees/new}" class="action-card"><i class="fas fa-user-tie"></i><h3>Add Staff</h3></a>
+        <a th:href="@{/admin/notifications}" class="action-card"><i class="fas fa-bullhorn"></i><h3>Send Announcement</h3></a>
+        <a th:href="@{/admin/reports}" class="action-card"><i class="fas fa-file-alt"></i><h3>View Reports</h3></a>
+        <a th:href="@{/admin/messages}" class="action-card"><i class="fas fa-envelope"></i><h3>Messages</h3></a>
+        <a th:href="@{/admin/fees/pending}" class="action-card"><i class="fas fa-wallet"></i><h3>Pending Fees</h3></a>
+    </div>
+
+    <!-- Notifications & Messages -->
+    <div class="dashboard-content-grid">
+        <div class="content-card">
+            <h2><i class="fas fa-bell"></i> Notifications</h2>
+            <ul class="notification-list" th:if="${notifications != null}">
+                <li th:each="note : ${notifications}">
+                    <span th:text="${note.message} ?: 'School reopens on Monday'">School reopens on Monday</span>
+                    <small th:text="${note.date} ?: '2h ago'">2h ago</small>
+                </li>
+            </ul>
+            <p th:if="${notifications == null || #lists.isEmpty(notifications)}" style="color: var(--text-muted);">✨ No new notifications</p>
+        </div>
+
+        <div class="content-card">
+            <h2><i class="fas fa-comment-dots"></i> Recent Messages</h2>
+            <ul class="message-list" th:if="${messages != null}">
+                <li th:each="msg : ${messages}">
+                    <span th:text="${msg.sender} ?: 'Principal'">Principal</span>:
+                    <span th:text="${msg.content} ?: 'Staff meeting at 3pm'">Staff meeting at 3pm</span>
+                </li>
+            </ul>
+            <p th:if="${messages == null || #lists.isEmpty(messages)}" style="color: var(--text-muted);">💬 No new messages</p>
+        </div>
+    </div>
+
+    <footer class="admin-footer">
+        <p>&copy; 2026 Green-Field School. All rights reserved.</p>
+        <p><i class="fas fa-heart"></i> Developed by Weldon Kipchirchir Cheserek</p>
+    </footer>
+</main>
+
+<script th:inline="javascript">
+document.addEventListener("DOMContentLoaded", function () {
+    const studentCount = [[${dashboardStats?.studentCount} ?: 0]];
+    const teacherCount = [[${dashboardStats?.teacherCount} ?: 0]];
+    const classCount = [[${dashboardStats?.classCount} ?: 0]];
+
+    const monthlyRevenueRaw = "[[${dashboardStats?.monthlyRevenue} ?: '0']]";
+    const pendingFeesRaw = "[[${dashboardStats?.pendingFees} ?: '0']]";
+    const monthlyRevenue = parseFloat(monthlyRevenueRaw.replace(/[^0-9.]/g, '')) || 0;
+    const pendingFees = parseFloat(pendingFeesRaw.replace(/[^0-9.]/g, '')) || 0;
+
+    // School Overview Chart
+    new Chart(document.getElementById('overviewChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Students', 'Teachers', 'Classes'],
+            datasets: [{
+                data: [studentCount, teacherCount, classCount],
+                backgroundColor: ['#4f46e5', '#10b981', '#f59e0b'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { legend: { position: 'bottom' } }
+        }
+    });
+
+    // Finance Chart
+    new Chart(document.getElementById('financeChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Monthly Revenue', 'Pending Fees'],
+            datasets: [{
+                label: 'KES',
+                data: [monthlyRevenue, pendingFees],
+                backgroundColor: ['#4f46e5', '#ef4444'],
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            scales: { y: { beginAtZero: true, ticks: { callback: value => '$' + value } } },
+            plugins: { legend: { display: false } }
+        }
+    });
+});
+</script>
+
+</body>
+</html>

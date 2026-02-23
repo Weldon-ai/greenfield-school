@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Financial Operations - GREEN-FIELD SCHOOL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --primary: #1a5276;
+            --secondary: #2874a6;
+            --accent: #17a589;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --success: #27ae60;
+            --light: #f8f9fa;
+            --dark: #2c3e50;
+            --border: #dcdde1;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .finance-header {
+            background: linear-gradient(135deg, #1a5276 0%, #2e86c1 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .branding {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .finance-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #17a589 0%, #148f77 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .header-text h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            letter-spacing: -0.5px;
+        }
+
+        .header-text p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .role-tag {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-left: 0.5rem;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-left: 1rem;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .dashboard-overview {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .financial-summary {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .summary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .summary-header h2 {
+            font-size: 1.6rem;
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        .period-selector {
+            display: flex;
+            gap: 0.5rem;
+            background: #ecf0f1;
+            padding: 0.3rem;
+            border-radius: 8px;
+        }
+
+        .period-btn {
+            padding: 0.5rem 1.5rem;
+            border: none;
+            background: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #7f8c8d;
+        }
+
+        .period-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .stat-card:nth-child(1) { background: linear-gradient(135deg, #d4efdf 0%, #a9dfbf 100%); }
+        .stat-card:nth-child(2) { background: linear-gradient(135deg, #fdebd0 0%, #f8c471 100%); }
+        .stat-card:nth-child(3) { background: linear-gradient(135deg, #d6eaf8 0%, #85c1e9 100%); }
+        .stat-card:nth-child(4) { background: linear-gradient(135deg, #fadbd8 0%, #f1948a 100%); }
+
+        .stat-icon {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            font-weight: 600;
+        }
+
+        .positive { color: var(--success); }
+        .negative { color: var(--danger); }
+
+        .financial-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .operations-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.8rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--accent);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--accent), var(--primary));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 1.2rem;
+            color: white;
+        }
+
+        .feature-card:nth-child(1) .card-icon { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); }
+        .feature-card:nth-child(2) .card-icon { background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); }
+        .feature-card:nth-child(3) .card-icon { background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); }
+        .feature-card:nth-child(4) .card-icon { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); }
+        .feature-card:nth-child(5) .card-icon { background: linear-gradient(135deg, #f39c12 0%, #d35400 100%); }
+        .feature-card:nth-child(6) .card-icon { background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%); }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            color: var(--dark);
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+
+        .feature-card p {
+            color: #666;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .feature-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .feature-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(52, 152, 219, 0.2);
+        }
+
+        .feature-btn::after {
+            content: '→';
+            margin-left: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-btn:hover::after {
+            transform: translateX(4px);
+        }
+
+        .recent-transactions {
+            background: white;
+            border-radius: 12px;
+            padding: 1.8rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .transactions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .transactions-header h3 {
+            font-size: 1.4rem;
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        .view-all {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .transactions-list {
+            list-style: none;
+        }
+
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            transition: background 0.3s ease;
+        }
+
+        .transaction-item:hover {
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+
+        .transaction-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: #ecf0f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .income .transaction-icon { background: #d4efdf; color: var(--success); }
+        .expense .transaction-icon { background: #fdebd0; color: var(--warning); }
+        .pending .transaction-icon { background: #d6eaf8; color: var(--primary); }
+
+        .transaction-details {
+            flex: 1;
+            margin-left: 1rem;
+        }
+
+        .transaction-details h4 {
+            font-size: 1rem;
+            color: var(--dark);
+            margin-bottom: 0.2rem;
+        }
+
+        .transaction-details p {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+        }
+
+        .transaction-amount {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .income .transaction-amount { color: var(--success); }
+        .expense .transaction-amount { color: var(--danger); }
+        .pending .transaction-amount { color: var(--warning); }
+
+        .reports-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-top: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .reports-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .reports-header h3 {
+            font-size: 1.4rem;
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        .report-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
+        }
+
+        .report-card:hover {
+            background: white;
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        .report-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .report-card h4 {
+            font-size: 1.1rem;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .report-card p {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .download-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .download-btn:hover {
+            background: var(--secondary);
+        }
+
+        .finance-footer {
+            background: var(--dark);
+            color: #ecf0f1;
+            padding: 2rem;
+            margin-top: 4rem;
+            border-top: 4px solid var(--accent);
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-info h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .footer-info p {
+            font-size: 0.9rem;
+            color: #bdc3c7;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-links a {
+            color: #bdc3c7;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        @media (max-width: 1200px) {
+            .summary-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .financial-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .reports-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+            
+            .header-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .dashboard-overview {
+                padding: 0 1rem;
+            }
+            
+            .operations-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .summary-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .finance-header {
+                padding: 1.5rem 1rem;
+            }
+            
+            .summary-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .reports-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .feature-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header class="finance-header">
+    <div class="header-container">
+        <div class="branding">
+            <div class="finance-icon">💰</div>
+            <div class="header-text">
+                <h1>Financial Operations Dashboard</h1>
+                <p>
+                    <span>GREEN-FIELD SCHOOL</span>
+                    <span class="role-tag" th:text="${role} + ' Department'">Finance Department</span>
+                </p>
+            </div>
+        </div>
+        <div class="header-nav">
+            <a th:href="@{/admin/dashboard}" class="nav-link">Admin</a>
+            <a th:href="@{/teacher/dashboard}" class="nav-link">Teacher</a>
+            <a th:href="@{/student/dashboard}" class="nav-link">Student</a>
+            <a th:href="@{/parent/dashboard}" class="nav-link">Parent</a>
+            <a th:href="@{/finance/dashboard}" class="nav-link active">Finance</a>
+            <button class="logout-btn" onclick="location.href='/logout'">Logout</button>
+        </div>
+    </div>
+</header>
+
+<main class="dashboard-overview">
+    <div class="financial-summary">
+        <div class="summary-header">
+            <h2>Financial Overview</h2>
+            <div class="period-selector">
+                <button class="period-btn active">Today</button>
+                <button class="period-btn">Week</button>
+                <button class="period-btn">Month</button>
+                <button class="period-btn">Quarter</button>
+            </div>
+        </div>
+        <div class="summary-stats">
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value">$245,820</div>
+                <div class="stat-label">Total Revenue</div>
+                <div class="stat-change positive">+12.5%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-value">$42,500</div>
+                <div class="stat-label">Pending Fees</div>
+                <div class="stat-change negative">-8.2%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-value">$203,320</div>
+                <div class="stat-label">Collected Fees</div>
+                <div class="stat-change positive">+15.3%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+                <div class="stat-value">94.7%</div>
+                <div class="stat-label">Collection Rate</div>
+                <div class="stat-change positive">+3.1%</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="financial-grid">
+        <div class="operations-grid">
+            <div class="feature-card">
+                <div class="card-icon">💳</div>
+                <h3>Fee Collection</h3>
+                <p>Process student fee payments, generate receipts, and manage payment plans. Supports multiple payment methods.</p>
+                <a class="feature-btn" th:href="@{/finance/collection}">Collect Fees</a>
+            </div>
+
+            <div class="feature-card">
+                <div class="card-icon">📋</div>
+                <h3>Expense Tracking</h3>
+                <p>Record and categorize all school expenditures, manage budgets, and generate expense reports by department.</p>
+                <a class="feature-btn" th:href="@{/finance/expenses}">Track Expenses</a>
+            </div>
+
+            <div class="feature-card">
+                <div class="card-icon">📊</div>
+                <h3>Financial Reports</h3>
+                <p>Generate comprehensive financial statements, balance sheets, profit & loss reports, and cash flow analysis.</p>
+                <a class="feature-btn" th:href="@{/finance/reports}">View Reports</a>
+            </div>
+
+            <div class="feature-card">
+                <div class="card-icon">⏳</div>
+                <h3>Pending Payments</h3>
+                <p>Monitor outstanding fees, send automated reminders, and track payment deadlines across all student accounts.</p>
+                <a class="feature-btn" th:href="@{/finance/pending}">View Pending</a>
+            </div>
+
+            <div class="feature-card">
+                <div class="card-icon">🏦</div>
+                <h3>Fee Structure</h3>
+                <p>Define and manage fee structures for different grades, programs, and additional services with flexible pricing.</p>
+                <a class="feature-btn" th:href="@{/finance/structure}">Manage Fees</a>
+            </div>
+
+            <div class="feature-card">
+                <div class="card-icon">🧾</div>
+                <h3>Tax Management</h3>
+                <p>Handle tax calculations, generate tax reports, and ensure compliance with local and national regulations.</p>
+                <a class="feature-btn" th:href="@{/finance/tax}">Tax Center</a>
+            </div>
+        </div>
+
+        <div class="recent-transactions">
+            <div class="transactions-header">
+                <h3>Recent Transactions</h3>
+                <a href="#" class="view-all">View All →</a>
+            </div>
+            <ul class="transactions-list">
+                <li class="transaction-item income">
+                    <div class="transaction-icon">💰</div>
+                    <div class="transaction-details">
+                        <h4>Tuition Fee - Grade 10</h4>
+                        <p>John Smith • 2 hours ago</p>
+                    </div>
+                    <div class="transaction-amount">+$1,250</div>
+                </li>
+                <li class="transaction-item expense">
+                    <div class="transaction-icon">🛒</div>
+                    <div class="transaction-details">
+                        <h4>School Supplies</h4>
+                        <p>Procurement Department • Today</p>
+                    </div>
+                    <div class="transaction-amount">-$850</div>
+                </li>
+                <li class="transaction-item income">
+                    <div class="transaction-icon">💰</div>
+                    <div class="transaction-details">
+                        <h4>Annual Sports Fee</h4>
+                        <p>Sarah Johnson • Yesterday</p>
+                    </div>
+                    <div class="transaction-amount">+$300</div>
+                </li>
+                <li class="transaction-item pending">
+                    <div class="transaction-icon">⏳</div>
+                    <div class="transaction-details">
+                        <h4>Transportation Fee</h4>
+                        <p>Michael Brown • Due in 3 days</p>
+                    </div>
+                    <div class="transaction-amount">$450</div>
+                </li>
+                <li class="transaction-item expense">
+                    <div class="transaction-icon">🏢</div>
+                    <div class="transaction-details">
+                        <h4>Utilities Payment</h4>
+                        <p>Facilities Department • 2 days ago</p>
+                    </div>
+                    <div class="transaction-amount">-$1,200</div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="reports-section">
+        <div class="reports-header">
+            <h3>Quick Reports & Exports</h3>
+            <a href="#" class="view-all">Generate Custom Report →</a>
+        </div>
+        <div class="reports-grid">
+            <div class="report-card">
+                <div class="report-icon">📄</div>
+                <h4>Monthly Statement</h4>
+                <p>Complete financial overview for current month</p>
+                <button class="download-btn">Download PDF</button>
+            </div>
+            <div class="report-card">
+                <div class="report-icon">📊</div>
+                <h4>Collection Report</h4>
+                <p>Fee collection statistics and trends</p>
+                <button class="download-btn">Download Excel</button>
+            </div>
+            <div class="report-card">
+                <div class="report-icon">🧾</div>
+                <h4>Tax Summary</h4>
+                <p>Quarterly tax calculations and reports</p>
+                <button class="download-btn">Download PDF</button>
+            </div>
+            <div class="report-card">
+                <div class="report-icon">📈</div>
+                <h4>Budget vs Actual</h4>
+                <p>Budget performance analysis</p>
+                <button class="download-btn">Download Excel</button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer class="finance-footer">
+    <div class="footer-content">
+        <div class="footer-info">
+            <h4>Financial Operations Center</h4>
+            <p>GREEN-FIELD SCHOOL • Ensuring Financial Excellence</p>
+            <p style="font-size: 0.8rem; margin-top: 0.5rem; color: #95a5a6;">Fiscal Year 2023-24 | Q3 Report Generated</p>
+        </div>
+        <div class="footer-links">
+            <a href="/finance/audit">Audit Logs</a>
+            <a href="/finance/help">Help Center</a>
+            <a href="/finance/compliance">Compliance</a>
+            <a href="/finance/security">Security</a>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

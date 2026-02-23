@@ -1,0 +1,94 @@
+<<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin | Students in Class</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f6f9; margin: 0; }
+        header { background: #1e293b; color: #fff; padding: 15px; text-align: center; }
+        .container { padding: 15px; }
+        .summary { background: #fff; padding: 15px; border-radius: 6px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .summary div { font-size: 14px; }
+        table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 6px; overflow: hidden; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #e5e7eb; font-size: 14px; }
+        th { background: #f1f5f9; }
+        .actions { display: flex; flex-wrap: wrap; gap: 5px; }
+        .actions form { margin: 0; }
+        .btn { text-decoration: none; padding: 6px 10px; border-radius: 4px; font-size: 12px; border: none; cursor: pointer; }
+        .btn-promote { background: #16a34a; color: white; }
+        .btn-defer { background: #ca8a04; color: white; }
+        .btn-retain { background: #2563eb; color: white; }
+        .btn-remove { background: #dc2626; color: white; }
+        a.back-link { text-decoration: none; color: #2563eb; font-size: 13px; }
+        a.back-link:hover { text-decoration: underline; }
+        @media (max-width: 768px) {
+            table, thead, tbody, th, td, tr { display: block; }
+            thead { display: none; }
+            tr { margin-bottom: 15px; border: 1px solid #e5e7eb; border-radius: 6px; padding: 10px; }
+            td { border: none; padding: 6px 0; }
+            td::before { content: attr(data-label); font-weight: bold; display: block; color: #475569; }
+            .actions { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h2 th:text="'Students in ' + ${schoolClass.className} + ' (' + ${schoolClass.classCode} + ')'">Class Name</h2>
+</header>
+
+<div class="container">
+
+    <!-- SUMMARY -->
+    <div class="summary">
+        <div><strong>Total Students:</strong> <span th:text="${#lists.size(students)}">0</span></div>
+        <div><a href="/admin/classes" class="back-link">← Back to Classes</a></div>
+    </div>
+
+    <!-- STUDENTS TABLE -->
+    <table>
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="student, iterStat : ${students}">
+            <td data-label="ID" th:text="${iterStat.count}">1</td>
+            <td data-label="Full Name" th:text="${student.fullName}">John Doe</td>
+            <td data-label="Email" th:text="${student.email}">email@example.com</td>
+            <td data-label="Phone" th:text="${student.phone}">0700000000</td>
+            <td data-label="Status" th:text="${student.status}">ACTIVE</td>
+            <td data-label="Actions">
+                <div class="actions">
+                    <form th:action="@{/admin/classes/{classId}/students/{studentId}/promote(classId=${schoolClass.id}, studentId=${student.id})}" method="post">
+                        <button type="submit" class="btn btn-promote">Promote</button>
+                    </form>
+                    <form th:action="@{/admin/classes/{classId}/students/{studentId}/defer(classId=${schoolClass.id}, studentId=${student.id})}" method="post">
+                        <button type="submit" class="btn btn-defer">Defer</button>
+                    </form>
+                    <form th:action="@{/admin/classes/{classId}/students/{studentId}/retain(classId=${schoolClass.id}, studentId=${student.id})}" method="post">
+                        <button type="submit" class="btn btn-retain">Retain</button>
+                    </form>
+                    <form th:action="@{/admin/classes/{classId}/students/{studentId}/remove(classId=${schoolClass.id}, studentId=${student.id})}" method="post"
+                          onsubmit="return confirm('Are you sure you want to remove this student from the class?');">
+                        <button type="submit" class="btn btn-remove">Remove</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(students)}">
+            <td colspan="6" style="text-align:center; font-style:italic;">No students found in this class.</td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>GREEN-FIELD SCHOOL | Register</title>
+
+    <style>
+        body {
+            background-color: #f0f8ff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .register-container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 360px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #006400;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #228B22;
+            margin-bottom: 25px;
+            font-weight: normal;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            margin-bottom: 5px;
+            color: #006400;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #b2dfdb;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #228B22;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #006400;
+        }
+
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .success {
+            color: green;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .links {
+            margin-top: 15px;
+        }
+
+        .links a {
+            text-decoration: none;
+            color: #006400;
+            font-size: 14px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #004d40;
+        }
+    </style>
+</head>
+<body>
+
+<div class="register-container">
+
+    <h1>GREEN-FIELD SCHOOL</h1>
+    <h2>Create Account</h2>
+
+    <!-- Error / success messages -->
+    <div th:if="${error}" class="error" th:text="${error}"></div>
+    <div th:if="${success}" class="success" th:text="${success}"></div>
+
+    <form th:action="@{/register}" method="post">
+
+        <label>Full Name</label>
+        <input type="text" name="fullName" placeholder="John Doe" 
+               th:value="${fullName}" required />
+
+        <label>Username</label>
+        <input type="text" name="username" placeholder="johndoe123" 
+               th:value="${username}" required />
+
+        <label>Email</label>
+        <input type="email" name="email" placeholder="example@email.com" 
+               th:value="${email}" required />
+
+        <label>Password</label>
+        <input type="password" name="password" placeholder="Enter password" required />
+
+        <label>Confirm Password</label>
+        <input type="password" name="confirmPassword" placeholder="Confirm password" required />
+
+        <label>Register As</label>
+        <select name="role" required>
+            <option value="">-- Select Role --</option>
+            <option value="STUDENT" th:selected="${role == 'STUDENT'}">Student</option>
+            <option value="TEACHER" th:selected="${role == 'TEACHER'}">Teacher</option>
+            
+        </select>
+
+        <button type="submit">Register</button>
+    </form>
+
+    <div class="links">
+        <p>
+            Already have an account?
+            <a th:href="@{/login}">Login</a>
+        </p>
+    </div>
+
+    <div class="footer">
+        © 2026 GREEN-FIELD SCHOOL
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <style th:fragment="headerStyles">
+        /* Navbar background matching a professional dashboard */
+        .custom-navbar {
+            background-color: #1a202c !important; /* Deep charcoal */
+            padding: 0.6rem 1.2rem;
+        }
+
+        /* Container to maintain the circular shape */
+        .logo-circle-container {
+            width: 42px;   
+            height: 42px;  
+            border-radius: 50%;
+            overflow: hidden; 
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ffffff;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-circle-container:hover {
+            transform: scale(1.05);
+        }
+
+        /* The actual image inside the circle */
+        .logo-img-rounded {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+        }
+
+        /* Fallback placeholder */
+        .logo-placeholder-circle {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .navbar-brand-text {
+            font-weight: 700;
+            margin-left: 12px;
+            letter-spacing: 0.5px;
+            color: #ffffff;
+            font-size: 1.25rem;
+        }
+
+        /* User profile section in navbar */
+        .user-nav-link {
+            color: #e2e8f0 !important;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark custom-navbar shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" th:href="@{/admin/settings-dashboard}">
+                <div th:if="${globalLogo}" class="logo-circle-container">
+                    <img th:src="${globalLogo}" alt="School Logo" class="logo-img-rounded">
+                </div>
+                
+                <div th:unless="${globalLogo}" class="logo-placeholder-circle">
+                    <span th:text="${#strings.substring(schoolName ?: 'G', 0, 1)}">G</span>
+                </div>
+                
+                <span class="navbar-brand-text" th:text="${schoolName ?: 'GreenField School'}">School Name</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbarContents">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="adminNavbarContents">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link px-3" th:href="@{/admin/settings-dashboard}">
+                            <i class="fas fa-cog me-1"></i> Settings
+                        </a>
+                    </li>
+
+                    <li class="nav-item dropdown ms-lg-3">
+                        <a class="nav-link dropdown-toggle user-nav-link" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle fa-lg"></i>
+                            <span th:text="${#authentication.name}">User</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-id-badge me-2 text-muted"></i> Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form th:action="@{/logout}" method="post" class="px-3 py-1">
+                                    <button type="submit" class="btn btn-sm btn-danger w-100">Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+</body>
+</html>

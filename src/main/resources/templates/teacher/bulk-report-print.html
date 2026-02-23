@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Class Report Cards - Print</title>
+    <style>
+        /* Modern Report Card Styling */
+        body { font-family: 'Times New Roman', serif; padding: 0; margin: 0; }
+        
+        .report-page {
+            width: 210mm; /* A4 Width */
+            min-height: 297mm; /* A4 Height */
+            padding: 20mm;
+            margin: 10mm auto;
+            background: white;
+            border: 1px solid #eee;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .school-header { text-align: center; border-bottom: 3px double #000; padding-bottom: 10px; margin-bottom: 20px; }
+        .school-name { font-size: 28px; font-weight: bold; margin: 0; }
+        
+        .student-details { display: grid; grid-template-columns: 1fr 1fr; margin-bottom: 20px; line-height: 1.6; }
+        
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid #000; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; }
+
+        .summary-box { margin-top: 20px; border: 1px solid #000; padding: 15px; }
+        .automated-remark { font-style: italic; margin-top: 10px; }
+        
+        .signatures { display: flex; justify-content: space-between; margin-top: 50px; }
+        .sig-line { border-top: 1px solid #000; width: 200px; text-align: center; padding-top: 5px; }
+
+        /* PRINT LOGIC */
+        @media print {
+            body { background: none; }
+            .no-print { display: none; }
+            .report-page {
+                margin: 0;
+                border: none;
+                page-break-after: always; /* Force printer to new page */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="no-print" style="text-align: center; padding: 20px; background: #2c3e50; color: white;">
+        <button onclick="window.print()" style="padding: 10px 20px; cursor: pointer; font-weight: bold;">
+            🖨️ Click Here to Print All Reports
+        </button>
+        <p>Each student will be printed on a separate page.</p>
+    </div>
+
+    <div th:each="report : ${reports}" class="report-page">
+        <div class="school-header">
+            <h1 class="school-name">GREENFIELD SCHOOL</h1>
+            <p>P.O. BOX 123-456, GREENFIELD | Email: info@greenfield.edu</p>
+            <h2>STUDENT PROGRESS REPORT</h2>
+        </div>
+
+        <div class="student-details">
+            <div><strong>Student Name:</strong> <span th:text="${report.student.user.fullName}"></span></div>
+            <div><strong>Admission No:</strong> <span th:text="${report.student.admissionNumber}"></span></div>
+            <div><strong>Class:</strong> <span th:text="${report.classes.className}"></span></div>
+            <div><strong>Term:</strong> <span th:text="${report.term}"></span></div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Score</th>
+                    <th>Grade</th>
+                    <th>Teacher's Remark</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="result : ${report.subjectResults}">
+                    <td th:text="${result.subjectName}"></td>
+                    <td th:text="${result.marks}"></td>
+                    <td th:text="${result.grade}"></td>
+                    <td th:text="${result.automatedRemark}"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="summary-box">
+            <p><strong>TOTAL MARKS:</strong> <span th:text="${report.totalMarks}"></span></p>
+            <p><strong>MEAN GRADE:</strong> <span th:text="${report.meanGrade}"></span></p>
+            <div class="automated-remark">
+                <strong>Class Teacher's General Remark:</strong><br/>
+                <span th:text="${report.automatedRemark}"></span>
+            </div>
+        </div>
+
+        <div class="signatures">
+            <div class="sig-line">Class Teacher Signature</div>
+            <div class="sig-line">Principal's Signature & Stamp</div>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Reports | Greenfield SMS</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f4f6f9; }
+        h2 { color: #1e3a8a; }
+        label { margin-right: 5px; font-weight: bold; }
+        select, button, a.button { padding: 6px 10px; margin-right: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #2563eb; color: #fff; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .button { background-color: #2563eb; color: #fff; border: none; cursor: pointer; border-radius: 4px; text-decoration: none; display: inline-block; font-size: 14px; }
+        .button:hover { background-color: #1e40af; }
+    </style>
+</head>
+<body>
+    <h2>📊 Student Reports</h2>
+
+    <form method="get" th:action="@{/admin/reports}">
+        <label>Class:</label>
+        <select name="classId">
+            <option value="">All</option>
+            <option th:each="cls : ${classes}" 
+                    th:value="${cls.id}" 
+                    th:text="${cls.className}"
+                    th:selected="${#strings.equals(param.classId, cls.id)}"></option>
+        </select>
+
+        <label>Teacher:</label>
+        <select name="teacherId">
+            <option value="">All</option>
+            <option th:each="t : ${teachers}" 
+                    th:value="${t.id}" 
+                    th:text="${t.fullName}"
+                    th:selected="${#strings.equals(param.teacherId, t.id)}"></option>
+        </select>
+
+        <label>Subject:</label>
+        <select name="subjectId">
+            <option value="">All</option>
+            <option th:each="sub : ${subjects}" 
+                    th:value="${sub.id}" 
+                    th:text="${sub.name}"
+                    th:selected="${#strings.equals(param.subjectId, sub.id)}"></option>
+        </select>
+
+        <button type="submit" class="button">Filter</button>
+        <a th:href="@{/admin/reports/export(classId=${param.classId},teacherId=${param.teacherId},subjectId=${param.subjectId})}" class="button">Export Excel</a>
+        <button type="button" class="button" onclick="window.print()">Print</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Full Name</th>
+                <th>Admission Number</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Gender</th>
+                <th>Status</th>
+                <th>Class</th>
+                <th>Teacher</th>
+                <th>Subjects</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="s : ${students}">
+                <td th:text="${s.id}"></td>
+                <td th:text="${s.fullName}"></td>
+                <td th:text="${s.admissionNumber}"></td>
+                <td th:text="${s.email}"></td>
+                <td th:text="${s.phone}"></td>
+                <td th:text="${s.gender}"></td>
+                <td th:text="${s.status}"></td>
+                <td th:text="${s.currentClass != null ? s.currentClass.className : 'N/A'}"></td>
+                <td th:text="${s.assignedTeacher != null ? s.assignedTeacher.fullName : 'Unassigned'}"></td>
+                <td th:text="${s.subjects != null and !#lists.isEmpty(s.subjects) ? #lists.join(s.subjects.![name], ', ') : 'No Subjects'}"></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(students)}">
+                <td colspan="10" style="text-align:center; color:red;">No students found matching the criteria.</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

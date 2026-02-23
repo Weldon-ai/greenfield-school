@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Classes</title>
+    <style>
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+        
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Main Content */
+        main {
+            padding: 2.5rem 2rem;
+        }
+        
+        .content-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid #eaeaea;
+            margin-bottom: 2rem;
+        }
+        
+        .classes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .classes-header h2 {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .status-badge {
+            background: #e8f4fc;
+            color: #3498db;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 1px solid #d1e7f5;
+        }
+        
+        /* Classes List */
+        .classes-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .class-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .class-card:hover {
+            transform: translateY(-5px);
+            border-color: #3498db;
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.15);
+        }
+        
+        .class-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: #3498db;
+        }
+        
+        .class-card h3 {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .class-details {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .class-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #f0f0f0;
+            font-size: 0.9rem;
+        }
+        
+        .credits {
+            color: #27ae60;
+            font-weight: 600;
+        }
+        
+        .status {
+            color: #7f8c8d;
+        }
+        
+        /* Database Notice */
+        .db-notice {
+            background: #fff8e6;
+            border-left: 4px solid #f39c12;
+            padding: 1.2rem;
+            margin-top: 2rem;
+            border-radius: 6px;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .notice-icon {
+            color: #f39c12;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        
+        .db-notice p {
+            color: #e67e22;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+        
+        /* Navigation */
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid #eee;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            border: 2px solid #3498db;
+        }
+        
+        .back-link:hover {
+            background: #3498db;
+            color: white;
+            transform: translateX(-5px);
+        }
+        
+        /* Footer */
+        footer {
+            background: #2c3e50;
+            color: #bdc3c7;
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.9rem;
+            border-top: 1px solid #34495e;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 8px;
+            }
+            
+            header {
+                padding: 2rem 1.5rem;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            main {
+                padding: 2rem 1.5rem;
+            }
+            
+            .classes-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .classes-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+    </style>
+
+</head>
+<body>
+
+<div class="container">
+
+    <header>
+        <h1>My Classes</h1>
+        <p>Below is a list of your enrolled classes for the current semester.</p>
+    </header>
+
+    <main>
+        <div class="content-card">
+
+            <!-- Header with safe count -->
+            <div class="classes-header">
+                <h2>Current Semester</h2>
+                <span class="status-badge"
+                      th:text="${classes != null ? classes.size() : 0} + ' Classes Enrolled'">
+                    0 Classes Enrolled
+                </span>
+            </div>
+
+            <!-- Classes list -->
+            <div class="classes-list">
+
+                <!-- Loop only if classes exist -->
+                <div th:if="${classes != null}">
+                    <div class="class-card"
+                         th:each="cls : ${classes}">
+
+                        <h3 th:text="${cls.className}">Class Name</h3>
+
+                        <div class="class-details"
+                             th:text="${cls.classCode}">
+                            Class Code
+                        </div>
+
+                        <div class="class-meta">
+                            <span class="credits"
+                                  th:text="${cls.schedule}">
+                                Schedule
+                            </span>
+
+                            <span class="status">In Progress</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty state -->
+                <div th:if="${classes == null || classes.isEmpty()}">
+                    <p>No classes found for this semester.</p>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="navigation">
+            <a th:href="@{/student/dashboard}" class="back-link">
+                ← Back to Dashboard
+            </a>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2023 Green-Field School. All rights reserved.</p>
+    </footer>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Attendance Dashboard | Greenfield SMS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; margin: 0; padding: 0; }
+        .container { width: 95%; max-width: 1200px; margin: 30px auto; }
+        h1 { color: #1e3a8a; margin-bottom: 20px; font-weight: 700; }
+        .card { background-color: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; border: 1px solid #e5e7eb; }
+        label { font-weight: 600; color: #4b5563; display: block; margin-bottom: 8px; font-size: 0.9rem; }
+        select, input[type="date"], button { padding: 10px; border-radius: 6px; border: 1px solid #d1d5db; margin-right: 12px; font-size: 0.95rem; }
+        button { background-color: #2563eb; color: white; border: none; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        button:hover { background-color: #1e40af; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        table th, table td { padding: 14px; text-align: left; border-bottom: 1px solid #f1f5f9; }
+        table th { background-color: #f8fafc; color: #64748b; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        
+        .status-present { color: #10b981; font-weight: 600; background: #ecfdf5; padding: 4px 10px; border-radius: 20px; }
+        .status-absent { color: #ef4444; font-weight: 600; background: #fef2f2; padding: 4px 10px; border-radius: 20px; }
+        .export-btn { background-color: #059669; }
+        .flex { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 15px; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <h1>📊 Attendance Analytics</h1>
+
+    <div class="card">
+        <form th:action="@{/admin/attendance}" method="get" class="flex">
+            <div>
+                <label>Filter by Class:</label>
+                <select name="classId">
+                    <option value="">All Classes</option>
+                    <option th:each="cls : ${allClasses}" 
+                            th:value="${cls.id}" 
+                            th:text="${cls.className}" 
+                            th:selected="${cls.id == selectedClassId}"></option>
+                </select>
+            </div>
+            <div>
+                <label>Date Range (Start):</label>
+                <input type="date" name="startDate" th:value="${startDate}">
+            </div>
+            <div>
+                <label>Date Range (End):</label>
+                <input type="date" name="endDate" th:value="${endDate}">
+            </div>
+            <button type="submit">Apply Filters</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2 style="color: #1e3a8a; margin-top: 0;">Performance Overview</h2>
+        <canvas id="attendanceChart" height="100"></canvas>
+    </div>
+
+    <div class="card">
+        <h2 style="color: #1e3a8a; margin-top: 0;">Log Details</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>Student Name</th>
+                <th>Class</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Staff Member</th>
+                <th>Lock Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="att : ${attendanceList}">
+                <td th:text="${att.student.fullName}" style="font-weight: 500;"></td>
+                <td th:text="${att.classes.className}"></td>
+                <td th:text="${att.date}"></td>
+                <td>
+                    <span th:class="${att.present ? 'status-present' : 'status-absent'}"
+                          th:text="${att.present ? 'Present' : 'Absent'}"></span>
+                </td>
+                <td th:text="${att.recordedBy}"></td>
+                <td>
+                    <small th:text="${att.locked ? '🔒 Locked' : '🔓 Open'}" 
+                           th:style="${att.locked ? 'color: #64748b' : 'color: #2563eb'}"></small>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(attendanceList)}">
+                <td colspan="6" style="text-align: center; color: #94a3b8; padding: 40px;">No records found for the selected criteria.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div style="margin-bottom: 50px;">
+        <button class="export-btn" th:onclick="'window.location.href=\'' + @{/admin/attendance/export/pdf(classId=${selectedClassId}, startDate=${startDate}, endDate=${endDate})} + '\';'">📄 Download PDF Report</button>
+        <button class="export-btn" th:onclick="'window.location.href=\'' + @{/admin/attendance/export/excel(classId=${selectedClassId}, startDate=${startDate}, endDate=${endDate})} + '\';'" style="background-color: #166534;">Excel Spreadsheet</button>
+    </div>
+
+</div>
+
+
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+    // We get the map of student names using the studentMap passed from the controller
+    const percentageMap = /*[[${attendancePercentage}]]*/ {};
+    const studentInfo = /*[[${studentMap}]]*/ {};
+
+    // Map IDs to Names for the chart labels
+    const labels = Object.keys(percentageMap).map(id => studentInfo[id].fullName);
+    const dataValues = Object.values(percentageMap);
+
+    const ctx = document.getElementById('attendanceChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Student Attendance %',
+                data: dataValues,
+                backgroundColor: 'rgba(37, 99, 235, 0.6)',
+                borderColor: '#1e40af',
+                borderWidth: 1,
+                borderRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true, max: 100, ticks: { callback: value => value + '%' } }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+/*]]>*/
+</script>
+</body>
+</html>

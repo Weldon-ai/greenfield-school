@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Notifications</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h2 { color: #2F4F4F; }
+        ul { list-style: none; padding: 0; }
+        li { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-left: 5px solid #228B22; }
+        .unread { background-color: #f0fff0; }
+        .date { font-size: 0.85em; color: #666; float: right; }
+        a { display: inline-block; margin-top: 20px; text-decoration: none; color: #006400; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<h2>🔔 Notifications</h2>
+
+<ul>
+    <li th:each="n : ${notifications}" th:classappend="${!n.readStatus} ? 'unread'">
+        <span th:text="${n.title}"></span>
+        <span class="date" th:text="${#dates.format(n.createdAt, 'dd MMM yyyy HH:mm')}"></span>
+        <p th:text="${n.message}"></p>
+    </li>
+    <li th:if="${notifications.size() == 0}">
+        No notifications yet.
+    </li>
+</ul>
+
+<a th:href="@{/student/dashboard}">⬅ Back to Dashboard</a>
+
+</body>
+</html>

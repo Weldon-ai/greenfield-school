@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Exams & Results</title>
+    <style>
+        /* ===== Body & Headings ===== */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 30px;
+            background-color: #f4f6f8;
+            color: #333;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #2ecc71;
+            padding-bottom: 5px;
+        }
+
+        /* ===== Table Styles ===== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 50px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #27ae60;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #dff0d8;
+        }
+
+        /* ===== Links ===== */
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #27ae60;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+        a:hover {
+            color: #2c3e50;
+        }
+
+        /* ===== No Data Rows ===== */
+        .no-data {
+            text-align: center;
+            font-style: italic;
+            color: #7f8c8d;
+        }
+
+        /* ===== Responsive Table ===== */
+        @media (max-width: 768px) {
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+            thead tr {
+                display: none;
+            }
+            tr {
+                margin-bottom: 15px;
+                border-bottom: 2px solid #ddd;
+            }
+            td {
+                text-align: right;
+                padding-left: 50%;
+                position: relative;
+            }
+            td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 15px;
+                width: 45%;
+                text-align: left;
+                font-weight: bold;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h2>📘 Upcoming Exams</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Subject</th>
+            <th>Date</th>
+            <th>Term</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="exam : ${exams}">
+            <td th:text="${exam.subject != null ? exam.subject.name : 'N/A'}" data-label="Subject"></td>
+            <td th:text="${exam.examDate != null ? #dates.format(exam.examDate, 'dd/MM/yyyy') : 'TBA'}" data-label="Date"></td>
+            <td th:text="${exam.term != null ? exam.term : 'N/A'}" data-label="Term"></td>
+        </tr>
+        <tr th:if="${exams == null or #lists.isEmpty(exams)}">
+            <td colspan="3" class="no-data">No exams scheduled.</td>
+        </tr>
+    </tbody>
+</table>
+
+<h2>🏆 Exam Results</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Subject</th>
+            <th>Marks</th>
+            <th>Grade</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="r : ${results}">
+            <td th:text="${r.subject != null ? r.subject.name : 'N/A'}" data-label="Subject"></td>
+            <td th:text="${r.marks}" data-label="Marks"></td>
+            <td th:text="${r.grade != null ? r.grade : '-'}" data-label="Grade"></td>
+        </tr>
+        <tr th:if="${results == null or #lists.isEmpty(results)}">
+            <td colspan="3" class="no-data">No results published yet.</td>
+        </tr>
+    </tbody>
+</table>
+
+<a th:href="@{/student/dashboard}">⬅ Back to Dashboard</a>
+
+</body>
+</html>

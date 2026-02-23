@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Create/Edit Exam | SMS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; color: #333; line-height: 1.6; }
+        .container { max-width: 500px; margin: 50px auto; padding: 30px; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        h2 { color: #1e3a8a; margin-top: 0; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; }
+        label { display: block; margin-top: 15px; font-weight: 600; color: #4b5563; }
+        input, select { padding: 10px; width: 100%; margin-top: 5px; border-radius: 6px; border: 1px solid #d1d5db; box-sizing: border-box; font-size: 14px; }
+        input:focus, select:focus { outline: none; border-color: #2563eb; ring: 2px #bfdbfe; }
+        button { background-color: #2563eb; color: white; padding: 12px; width: 100%; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 25px; transition: background 0.2s; }
+        button:hover { background-color: #1d4ed8; }
+        .back-link { display: block; text-align: center; margin-top: 15px; color: #6b7280; text-decoration: none; font-size: 14px; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>📚 Exam Details</h2>
+
+    <form th:action="@{/admin/exams/save}" th:object="${exam}" method="post">
+        <input type="hidden" th:field="*{id}">
+
+        <label>Subject Name</label>
+        <input type="text" th:field="*{subject}" placeholder="e.g. Mathematics" required>
+
+        <label>Academic Term</label>
+        <input type="text" th:field="*{term}" placeholder="e.g. Term One" required>
+
+        <label>Scheduled Date</label>
+        <input type="date" th:field="*{examDate}" required>
+
+        <label>Target Class</label>
+        <select name="classId" required>
+            <option value="" disabled th:selected="${exam.classes == null}">-- Select Class --</option>
+            <option th:each="cls : ${allClasses}"
+                    th:value="${cls.id}"
+                    th:text="${cls.displayName}"
+                    th:selected="${exam.classes != null and cls.id == exam.classes.id}">
+            </option>
+        </select>
+
+        <button type="submit">Save Exam</button>
+        <a th:href="@{/admin/exams}" class="back-link">Cancel and Return</a>
+    </form>
+</div>
+</body>
+</html>

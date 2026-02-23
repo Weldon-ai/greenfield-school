@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Student Fees</title>
+    <style>
+        body { font-family: Arial; margin: 20px; }
+        h2 { color: #2F4F4F; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        th { background-color: #228B22; color: white; }
+        .pending { color: red; font-weight: bold; }
+        .paid { color: green; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<h2>💰 Fees Status</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Description</th>
+            <th>Amount</th>
+            <th>Paid</th>
+            <th>Pending</th>
+            <th>Due Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="f : ${fees}">
+            <td th:text="${f.description}"></td>
+            <td th:text="${f.amount}"></td>
+            <td th:text="${f.paidAmount}"></td>
+            <td th:text="${f.pendingAmount}" th:class="${f.pendingAmount > 0 ? 'pending' : 'paid'}"></td>
+            <td th:text="${f.dueDate}"></td>
+        </tr>
+        <tr th:if="${fees.size() == 0}">
+            <td colspan="5">No fee records found.</td>
+        </tr>
+    </tbody>
+</table>
+
+<a th:href="@{/student/dashboard}">⬅ Back to Dashboard</a>
+
+</body>
+</html>

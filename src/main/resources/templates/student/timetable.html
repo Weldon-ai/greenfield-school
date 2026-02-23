@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Schedule | Green-Field International</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a5f23;
+            --primary-light: #2e8b57;
+            --accent: #ffd700;
+            --bg: #f4f7f6;
+            --white: #ffffff;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); padding: 2rem; margin: 0; color: #1e293b; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        /* Header */
+        .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2.5rem; }
+        .back-link { text-decoration: none; color: var(--primary-light); font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem; }
+
+        /* Timetable Grid */
+        .timetable-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .day-column {
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            padding: 1rem;
+            min-height: 400px;
+            border: 1px dashed #cbd5e1;
+        }
+
+        .day-header {
+            text-align: center;
+            padding: 10px;
+            background: var(--primary);
+            color: white;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .class-card {
+            background: var(--white);
+            border-radius: 15px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--accent);
+            transition: transform 0.2s;
+        }
+
+        .class-card:hover { transform: translateY(-5px); }
+
+        .time { font-size: 0.75rem; font-weight: 800; color: var(--primary-light); display: block; margin-bottom: 5px; }
+        .subject { font-size: 1rem; font-weight: 700; display: block; margin-bottom: 8px; }
+        .meta { font-size: 0.8rem; color: #64748b; display: flex; flex-direction: column; gap: 4px; }
+        
+        .empty-msg { text-align: center; color: #94a3b8; padding: 2rem; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header class="header">
+        <div>
+            <a th:href="@{/student/dashboard}" class="back-link"><i class="fas fa-chevron-left"></i> Dashboard</a>
+            <h1 style="font-size: 2.2rem; margin: 0;">Weekly Schedule</h1>
+        </div>
+        <div style="text-align: right">
+            <span style="background: white; padding: 8px 16px; border-radius: 10px; font-weight: 600; box-shadow: var(--shadow);">
+                <i class="fas fa-graduation-cap" style="color: var(--primary);"></i> Class: <span th:text="${className}">N/A</span>
+            </span>
+        </div>
+    </header>
+
+    <div class="timetable-grid">
+        <div th:each="day : ${ {'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'} }" class="day-column">
+            <div class="day-header" th:text="${day}">Monday</div>
+            
+            <div th:each="t : ${timetable}" th:if="${t.dayOfWeek == day}" class="class-card">
+                <span class="time">
+                    <i class="far fa-clock"></i> <span th:text="${t.startTime}">08:00</span> - <span th:text="${t.endTime}">09:30</span>
+                </span>
+                <span class="subject" th:text="${t.subject.subjectName}">Subject</span>
+                <div class="meta">
+                    <span><i class="fas fa-user-tie"></i> <span th:text="${t.teacher.fullName}">Teacher</span></span>
+                    <span><i class="fas fa-map-marker-alt"></i> Room <span th:text="${t.roomNumber}">402</span></span>
+                </div>
+            </div>
+
+            <div th:if="${#lists.isEmpty(timetable.?[dayOfWeek == '__${day}__'])}" class="empty-msg">
+                No classes
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

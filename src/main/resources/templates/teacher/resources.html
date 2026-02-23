@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Resources Management | Greenfield SMS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background-color: #f4f6f9; color: #334155; }
+        .container { width: 95%; max-width: 1000px; margin: 40px auto; display: grid; grid-template-columns: 1fr 1.5fr; gap: 25px; }
+        h2 { color: #1e3a8a; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .card { background-color: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #1e293b; font-size: 0.9rem; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-family: inherit; font-size: 0.95rem; }
+        .btn { padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; }
+        .btn-primary { background-color: #2563eb; color: white; width: 100%; }
+        .btn-primary:hover { background-color: #1e40af; }
+        .btn-delete { color: #ef4444; background: #fee2e2; padding: 6px 10px; font-size: 0.85rem; }
+        .badge { background: #eff6ff; color: #2563eb; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
+        .success { background-color: #10b981; color: white; padding: 12px; border-radius: 6px; margin-bottom: 15px; }
+        .error { background-color: #ef4444; color: white; padding: 12px; border-radius: 6px; margin-bottom: 15px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { text-align: left; padding: 12px; border-bottom: 2px solid #e2e8f0; color: #64748b; font-size: 0.85rem; text-transform: uppercase; }
+        td { padding: 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <!-- ================= Upload Section ================= -->
+    <div class="upload-section">
+        <h2><i class="fas fa-file-upload"></i> New Resource</h2>
+        <div class="card">
+
+            <!-- Success / Error Messages -->
+            <div th:if="${success}" class="success">
+                <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+            </div>
+            <div th:if="${error}" class="error">
+                <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+            </div>
+
+            <!-- Upload Form -->
+            <form th:action="@{/teacher/resources/save}" th:object="${newResource}" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" th:field="*{title}" placeholder="e.g. Algebra Worksheet" required/>
+                </div>
+
+                <div class="form-group">
+                    <label>Assign to Class</label>
+                    <select th:field="*{classes.id}" required>
+                        <option value="">Select Class...</option>
+                        <option th:each="cls : ${classes}" 
+                                th:value="${cls.id}" 
+                                th:text="${cls.className} + ' (' + cls.classCode + ')'">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea th:field="*{description}" rows="3" placeholder="Short description..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>File Attachment</label>
+                    <input type="file" name="file" required/>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-upload"></i> Upload Resource
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= Resource List Section ================= -->
+    <div class="list-section">
+        <h2><i class="fas fa-folder-open"></i> Resource Library</h2>
+        <div class="card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title & Description</th>
+                        <th>Class</th>
+                        <th>Uploaded By</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Show resources -->
+                    <tr th:each="res : ${resources}">
+                        <td>
+                            <div style="font-weight: 600; color: #1e293b;" th:text="${res.title}">Title</div>
+                            <div style="font-size: 0.8rem; color: #94a3b8;" th:text="${res.description != null ? res.description : 'No description'}">Desc</div>
+                        </td>
+                        <td>
+                            <span class="badge" th:text="${res.classes != null ? res.classes.classCode : 'N/A'}">N/A</span>
+                        </td>
+                        <td>
+                            <span th:text="${res.uploadedBy != null ? res.uploadedBy.username : 'Anonymous'}">Anonymous</span>
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <a th:if="${res.filePath != null}" th:href="@{'/' + ${res.filePath}}" target="_blank" title="Download">
+                                    <i class="fas fa-download" style="color: #64748b;"></i>
+                                </a>
+                                <a th:href="@{/teacher/resources/delete/{id}(id=${res.id})}" class="btn-delete btn" 
+                                   onclick="return confirm('Delete this resource?')">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Empty state -->
+                    <tr th:if="${resources == null or #lists.isEmpty(resources)}">
+                        <td colspan="4" style="text-align: center; color: #94a3b8; padding: 30px;">
+                            No resources uploaded yet.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

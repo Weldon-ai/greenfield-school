@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
+    <title>Green-Field School | Excellence in Education</title>
+
+    <!-- Professional fonts & icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+
+    <style>
+        /* ========== PROFESSIONAL SCHOOL HOMEPAGE ========== */
+        /* Modern, clean, and fully responsive – Green-Field School */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2e7d32;        /* Deep green – school identity */
+            --primary-light: #81c784;
+            --primary-dark: #1b5e20;
+            --primary-soft: #e8f5e9;
+            
+            --bg-main: #f8fafc;
+            --bg-surface: #ffffff;
+            --border-light: #e2e8f0;
+            
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --text-on-primary: #ffffff;
+            
+            --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+            --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.03);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.03);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.03);
+            
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-body);
+            line-height: 1.6;
+            font-size: 0.9375rem;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* ========== HEADER & NAVIGATION (Sticky) ========== */
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border-light);
+            padding: 0.8rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+        .logo-text h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .logo-text span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 0.03em;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            font-weight: 600;
+            color: var(--text-body);
+            padding: 0.5rem 0;
+            border-bottom: 2px solid transparent;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .nav-link.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .login-btn {
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 30px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            border: 1px solid var(--primary);
+        }
+
+        .login-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* ========== HERO SLIDESHOW (Enhanced) ========== */
+        .hero {
+            position: relative;
+            height: 600px;
+            overflow: hidden;
+        }
+
+        .hero-slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            animation: fadeSlide 30s infinite;
+        }
+
+        .hero-slide:nth-child(1) { background-image: url('/images/1.jpg'); animation-delay: 0s; }
+        .hero-slide:nth-child(2) { background-image: url('/images/2.jpg'); animation-delay: 6s; }
+        .hero-slide:nth-child(3) { background-image: url('/images/3.jpg'); animation-delay: 12s; }
+        .hero-slide:nth-child(4) { background-image: url('/images/4.jpg'); animation-delay: 18s; }
+        .hero-slide:nth-child(5) { background-image: url('/images/5.jpg'); animation-delay: 24s; }
+
+        @keyframes fadeSlide {
+            0%,25%,100% { opacity: 0; transform: scale(1.05); }
+            5%,20% { opacity: 1; transform: scale(1); }
+        }
+
+        .hero-overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(0,0,0,0.6), rgba(0,0,0,0.3));
+            z-index: 2;
+        }
+
+        .hero-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            text-align: center;
+            color: white;
+            max-width: 800px;
+            padding: 0 1.5rem;
+        }
+
+        .hero-content h2 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.4);
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-outline-light {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+
+        .btn-outline-light:hover {
+            background: white;
+            color: var(--primary-dark);
+        }
+
+        /* ========== STATS SECTION ========== */
+        .stats-section {
+            padding: 3rem 2rem;
+            background: white;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .stats-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            background: var(--bg-main);
+            transition: var(--transition);
+        }
+
+        .stat-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        /* ========== SECTIONS (Common) ========== */
+        .section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* About section (two columns) */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .about-text p {
+            margin-bottom: 1.2rem;
+        }
+
+        .about-image img {
+            width: 100%;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Features cards */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1.2rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            margin-bottom: 0.5rem;
+        }
+
+        /* News grid */
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .news-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .news-image {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .news-content {
+            padding: 1.5rem;
+        }
+
+        .news-date {
+            font-size: 0.75rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .news-content h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            margin-bottom: 0.5rem;
+        }
+
+        .news-content p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .read-more {
+            color: var(--primary);
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        /* Events list */
+        .events-list {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .event-item {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .event-item:last-child {
+            border-bottom: none;
+        }
+
+        .event-date {
+            background: var(--primary-soft);
+            color: var(--primary-dark);
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .event-date .day {
+            font-size: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .event-date .month {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+        }
+
+        .event-details {
+            flex: 1;
+        }
+
+        .event-details h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            margin-bottom: 0.2rem;
+        }
+
+        .event-details p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Testimonials carousel */
+        .testimonials-carousel {
+            overflow: hidden;
+            position: relative;
+        }
+
+        .testimonial-track {
+            display: flex;
+            gap: 2rem;
+            transition: transform 0.5s ease;
+        }
+
+        .testimonial-card {
+            min-width: 350px;
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
+        }
+
+        .testimonial-content {
+            font-style: italic;
+            margin-bottom: 1.5rem;
+            color: var(--text-body);
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .author-info h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-heading);
+        }
+
+        .author-info p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .carousel-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .carousel-btn {
+            background: var(--primary-soft);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--primary);
+        }
+
+        .carousel-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Calendar section */
+        .calendar-wrapper {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+        }
+
+        #fullcalendar {
+            height: 500px;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--primary);
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 30px;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        /* Contact section */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+        }
+
+        .contact-info {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-soft);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .contact-item p {
+            font-size: 0.95rem;
+        }
+
+        .map-container iframe {
+            width: 100%;
+            height: 300px;
+            border: none;
+            border-radius: var(--radius-lg);
+        }
+
+        /* Footer */
+        .site-footer {
+            background: #0f172a;
+            color: #94a3b8;
+            padding: 3rem 2rem 1.5rem;
+        }
+
+        .footer-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-col h4 {
+            color: white;
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+            font-size: 1rem;
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 0.6rem;
+        }
+
+        .footer-col a {
+            color: #94a3b8;
+            transition: var(--transition);
+        }
+
+        .footer-col a:hover {
+            color: white;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            width: 36px;
+            height: 36px;
+            background: #1e293b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: var(--transition);
+        }
+
+        .social-links a:hover {
+            background: var(--primary);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid #1e293b;
+            font-size: 0.8rem;
+        }
+
+        /* Back to top */
+        #back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary);
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 99;
+            border: none;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        #back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #back-to-top:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+        }
+
+        /* Responsive */
+        @media screen and (max-width: 992px) {
+            .hero-content h2 { font-size: 2.2rem; }
+            .about-grid { grid-template-columns: 1fr; }
+            .contact-grid { grid-template-columns: 1fr; }
+        }
+
+        @media screen and (max-width: 768px) {
+            .site-header { flex-direction: column; gap: 1rem; padding: 1rem; }
+            .nav-menu { justify-content: center; }
+            .hero { height: 500px; }
+            .hero-content h2 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ========== STICKY HEADER ========== -->
+<header class="site-header">
+    <div class="logo-area">
+        <i class="fas fa-school logo-icon"></i>
+        <div class="logo-text">
+            <h1>Green-Field School</h1>
+            <span>Excellence in Education</span>
+        </div>
+    </div>
+    <nav class="nav-menu">
+        <a href="#home" class="nav-link active">Home</a>
+        <a href="#about" class="nav-link">About</a>
+        <a href="#features" class="nav-link">Academics</a>
+        <a href="#news" class="nav-link">News</a>
+        <a href="#events" class="nav-link">Events</a>
+        <a href="#calendar" class="nav-link">Calendar</a>
+        <a href="#contact" class="nav-link">Contact</a>
+        <a th:href="@{/login}" class="login-btn"><i class="fas fa-user"></i> Login</a>
+    </nav>
+</header>
+
+<!-- ========== HERO SLIDESHOW ========== -->
+<section id="home" class="hero">
+    <div class="hero-slide"></div>
+    <div class="hero-slide"></div>
+    <div class="hero-slide"></div>
+    <div class="hero-slide"></div>
+    <div class="hero-slide"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h2>Welcome to Green-Field School</h2>
+        <p>Shaping future leaders through holistic education, innovation, and character development.</p>
+        <div class="hero-buttons">
+            <a href="#about" class="btn btn-primary"><i class="fas fa-info-circle"></i> Learn More</a>
+            <a href="#contact" class="btn btn-outline-light"><i class="fas fa-envelope"></i> Contact Us</a>
+        </div>
+    </div>
+</section>
+
+<!-- ========== STATS SECTION ========== -->
+<div class="stats-section">
+    <div class="stats-grid">
+        <div class="stat-item">
+            <div class="stat-icon"><i class="fas fa-user-graduate"></i></div>
+            <div class="stat-number">1,200+</div>
+            <div class="stat-label">Students</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+            <div class="stat-number">85+</div>
+            <div class="stat-label">Teachers</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-icon"><i class="fas fa-trophy"></i></div>
+            <div class="stat-number">30+</div>
+            <div class="stat-label">Years of Excellence</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-icon"><i class="fas fa-globe"></i></div>
+            <div class="stat-number">5</div>
+            <div class="stat-label">Campuses</div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== ABOUT SECTION ========== -->
+<section id="about" class="section">
+    <div class="section-header">
+        <h2>About Green-Field</h2>
+        <p>Discover our mission, vision, and commitment to excellence.</p>
+    </div>
+    <div class="about-grid">
+        <div class="about-text">
+            <p>Green-Field School was founded in 1995 with the vision of providing holistic education that nurtures both academic excellence and character development. Located in the serene environment of Sergoit, Iten, we offer a conducive learning atmosphere where students thrive.</p>
+            <p>Our curriculum integrates academics, sports, arts, and technology, ensuring that every student discovers and develops their unique talents. We are committed to shaping responsible, creative, and skilled future leaders who will make a positive impact on society.</p>
+            <p>With modern facilities, dedicated teachers, and a supportive community, Green-Field School stands as a beacon of quality education in Elgeyo Marakwet County and beyond.</p>
+            <a href="#" class="btn btn-primary"><i class="fas fa-arrow-right"></i> Read More</a>
+        </div>
+        <div class="about-image">
+            <img src="/images/about.jpg" alt="Green-Field School" th:src="@{/images/about-placeholder.jpg}">
+        </div>
+    </div>
+</section>
+
+<!-- ========== FEATURES / ACADEMICS ========== -->
+<section id="features" class="section">
+    <div class="section-header">
+        <h2>Why Choose Us</h2>
+        <p>Exceptional programs and facilities that set us apart.</p>
+    </div>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon"><i class="fas fa-flask"></i></div>
+            <h3>Modern Labs</h3>
+            <p>Fully equipped science and computer labs for hands-on learning.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon"><i class="fas fa-futbol"></i></div>
+            <h3>Sports Academy</h3>
+            <p>Comprehensive sports programs including athletics, football, and basketball.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon"><i class="fas fa-palette"></i></div>
+            <h3>Arts & Music</h3>
+            <p>Dedicated spaces for visual arts, music, and drama to nurture creativity.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon"><i class="fas fa-laptop"></i></div>
+            <h3>ICT Integration</h3>
+            <p>Digital learning with smart classrooms and e-learning resources.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ========== LATEST NEWS (dynamic) ========== -->
+<section id="news" class="section">
+    <div class="section-header">
+        <h2>Latest News</h2>
+        <p>Stay updated with happenings at Green-Field.</p>
+    </div>
+    <div class="news-grid">
+        <div th:each="news : ${newsList}" class="news-card">
+            <div class="news-image" th:style="'background-image: url(' + ${news.imageUrl} + ');'" style="background-image: url('/images/news-default.jpg');"></div>
+            <div class="news-content">
+                <div class="news-date" th:text="${#dates.format(news.publishDate, 'dd MMM yyyy')}">14 Feb 2026</div>
+                <h3 th:text="${news.title}">News Title</h3>
+                <p th:text="${news.summary}">Short summary of the news article...</p>
+                <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== UPCOMING EVENTS ========== -->
+<section id="events" class="section">
+    <div class="section-header">
+        <h2>Upcoming Events</h2>
+        <p>Mark your calendars for these important dates.</p>
+    </div>
+    <div class="events-list">
+        <div th:each="event : ${events}" class="event-item">
+            <div class="event-date">
+                <span class="day" th:text="${#dates.format(event.eventDate, 'dd')}">20</span>
+                <span class="month" th:text="${#dates.format(event.eventDate, 'MMM')}">Feb</span>
+            </div>
+            <div class="event-details">
+                <h3 th:text="${event.title}">Event Title</h3>
+                <p th:text="${event.description}">Event description goes here...</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== TESTIMONIALS CAROUSEL ========== -->
+<section id="testimonials" class="section">
+    <div class="section-header">
+        <h2>What Parents Say</h2>
+        <p>Testimonials from our school community.</p>
+    </div>
+    <div class="testimonials-carousel">
+        <div class="testimonial-track" id="testimonialTrack">
+            <!-- Static testimonials (can be dynamic later) -->
+            <div class="testimonial-card">
+                <div class="testimonial-content">"Green-Field has transformed my child's academic performance and confidence. The teachers are dedicated and caring."</div>
+                <div class="testimonial-author">
+                    <div class="author-avatar">JM</div>
+                    <div class="author-info">
+                        <h4>John Mwangi</h4>
+                        <p>Parent, Class 6</p>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-content">"The sports programs are excellent. My daughter has represented the school in national competitions."</div>
+                <div class="testimonial-author">
+                    <div class="author-avatar">AK</div>
+                    <div class="author-info">
+                        <h4>Anne Kipchoge</h4>
+                        <p>Parent, Class 8</p>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-content">"A school that truly cares about holistic development. The arts and music programs are outstanding."</div>
+                <div class="testimonial-author">
+                    <div class="author-avatar">PO</div>
+                    <div class="author-info">
+                        <h4>Peter Odhiambo</h4>
+                        <p>Alumni Parent</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="carousel-controls">
+        <button class="carousel-btn" id="testimonialPrev"><i class="fas fa-chevron-left"></i></button>
+        <button class="carousel-btn" id="testimonialNext"><i class="fas fa-chevron-right"></i></button>
+    </div>
+</section>
+
+<!-- ========== CALENDAR SECTION ========== -->
+<section id="calendar" class="section">
+    <div class="section-header">
+        <h2>Academic Calendar</h2>
+        <p>Stay on track with important school dates.</p>
+    </div>
+    <div class="calendar-wrapper">
+        <div id="fullcalendar"></div>
+    </div>
+    <div style="text-align: center;">
+        <a class="download-btn" th:href="@{/files/GreenFieldCalendar.pdf}" download>
+            <i class="fas fa-download"></i> Download Calendar PDF
+        </a>
+    </div>
+</section>
+
+<!-- ========== CONTACT SECTION ========== -->
+<section id="contact" class="section">
+    <div class="section-header">
+        <h2>Contact Us</h2>
+        <p>Get in touch with us for inquiries or visits.</p>
+    </div>
+    <div class="contact-grid">
+        <div class="contact-info">
+            <div class="contact-item">
+                <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+                <p>Sergoit, Iten, Elgeyo Marakwet County, Kenya</p>
+            </div>
+            <div class="contact-item">
+                <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                <p>info@greenfieldschool.ac.ke</p>
+            </div>
+            <div class="contact-item">
+                <div class="contact-icon"><i class="fas fa-phone-alt"></i></div>
+                <p>+254 700 000000 | +254 711 222333</p>
+            </div>
+            <div class="contact-item">
+                <div class="contact-icon"><i class="fas fa-clock"></i></div>
+                <p>Mon - Fri: 8:00 AM - 5:00 PM<br>Sat: 9:00 AM - 1:00 PM</p>
+            </div>
+        </div>
+        <div class="map-container">
+            <iframe src="https://maps.google.com/maps?q=Iten&t=&z=15&ie=UTF8&iwloc=&output=embed"></iframe>
+        </div>
+    </div>
+</section>
+
+<!-- ========== FOOTER ========== -->
+<footer class="site-footer">
+    <div class="footer-grid">
+        <div class="footer-col">
+            <h4>Green-Field School</h4>
+            <p>Providing quality education since 1995. We nurture future leaders through holistic development.</p>
+        </div>
+        <div class="footer-col">
+            <h4>Quick Links</h4>
+            <ul>
+                <li><a href="#about">About Us</a></li>
+                <li><a href="#features">Academics</a></li>
+                <li><a href="#news">News</a></li>
+                <li><a href="#events">Events</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>Resources</h4>
+            <ul>
+                <li><a href="#">Student Portal</a></li>
+                <li><a href="#">Parent Portal</a></li>
+                <li><a href="#">Staff Portal</a></li>
+                <li><a th:href="@{/files/GreenFieldCalendar.pdf}">Calendar PDF</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>Connect With Us</h4>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2026 Green-Field School. All Rights Reserved. Developed by Weldon Kipchirchir Cheserek</p>
+    </div>
+</footer>
+
+<!-- Back to Top -->
+<div id="back-to-top"><i class="fas fa-arrow-up"></i></div>
+
+<!-- FullCalendar JS -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+<script>
+    // ========== FULLCALENDAR INIT ==========
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('fullcalendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            height: 500,
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            events: [
+                { title: 'Parent Meeting', start: '2026-02-20' },
+                { title: 'Sports Day', start: '2026-03-05' },
+                { title: 'Exam Week', start: '2026-03-10', end: '2026-03-15' }
+            ]
+        });
+        calendar.render();
+    });
+
+    // ========== SCROLL ANIMATIONS ==========
+    const sections = document.querySelectorAll('.section');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.2, rootMargin: '0px' });
+    sections.forEach(section => observer.observe(section));
+
+    // ========== BACK TO TOP ==========
+    const backToTop = document.getElementById('back-to-top');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            backToTop.classList.add('show');
+        } else {
+            backToTop.classList.remove('show');
+        }
+    });
+    backToTop.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // ========== TESTIMONIAL CAROUSEL ==========
+    const track = document.getElementById('testimonialTrack');
+    const prevBtn = document.getElementById('testimonialPrev');
+    const nextBtn = document.getElementById('testimonialNext');
+    let position = 0;
+    const cardWidth = 380; // approx width + gap
+    const maxScroll = track.scrollWidth - track.clientWidth;
+
+    prevBtn.addEventListener('click', () => {
+        position = Math.max(position - cardWidth, 0);
+        track.style.transform = `translateX(-${position}px)`;
+    });
+    nextBtn.addEventListener('click', () => {
+        position = Math.min(position + cardWidth, maxScroll);
+        track.style.transform = `translateX(-${position}px)`;
+    });
+
+    // ========== SMOOTH SCROLL FOR NAV LINKS ==========
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            const targetId = link.getAttribute('href');
+            if (targetId.startsWith('#')) {
+                e.preventDefault();
+                const target = document.querySelector(targetId);
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

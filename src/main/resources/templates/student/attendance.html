@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Student Attendance Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f9fafb; }
+        h2 { color: #1e3a8a; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+        th { background-color: #1e3a8a; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        .back-btn { display: inline-block; margin-top: 20px; padding: 8px 15px; background-color: #2563eb; color: white; text-decoration: none; border-radius: 5px; }
+        .back-btn:hover { background-color: #1e40af; }
+        .chart-container { width: 100%; max-width: 600px; margin-top: 40px; }
+    </style>
+</head>
+<body>
+
+<h2 th:text="'Attendance for ' + ${studentName}">My Attendance</h2>
+
+<!-- Attendance Table -->
+<table>
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Class</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Loop through attendance records -->
+        <tr th:each="a : ${attendanceList}">
+            <td th:text="${a.date}">Date</td>
+            <td th:text="${a.schoolClass != null ? a.schoolClass.name : 'N/A'}">Class</td>
+            <td th:text="${a.present ? 'Present' : 'Absent'}">Status</td>
+        </tr>
+        <!-- Show message if list is empty -->
+        <tr th:if="${#lists.isEmpty(attendanceList)}">
+            <td colspan="3">No attendance records found.</td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- Attendance Percentage Chart -->
+<div class="chart-container">
+    <canvas id="attendanceChart" width="400" height="200"></canvas>
+</div>
+
+<a th:href="@{/student/dashboard}" class="back-btn">Back to Dashboard</a>
+
+<!-- Chart.js Script -->
+<script th:inline="javascript">
+/*<![CDATA[*/
+const attendancePercentage = /*[[${attendancePercentage}]]*/ {};
+const labels = Object.keys(attendancePercentage);
+const data = Object.values(attendancePercentage);
+
+const ctx = document.getElementById('attendanceChart').getContext('2d');
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: labels,
+        datasets: [{
+            label: 'Attendance %',
+            data: data,
+            backgroundColor: 'rgba(37, 99, 235, 0.7)',
+            borderColor: 'rgba(37, 99, 235, 1)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: { beginAtZero: true, max: 100 }
+        }
+    }
+});
+/*]]>*/
+</script>
+
+</body>
+</html>

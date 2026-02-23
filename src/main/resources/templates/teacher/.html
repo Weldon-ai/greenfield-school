@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Take Attendance</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .btn {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #333;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        input, select {
+            padding: 5px;
+            margin: 5px 0;
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<h1>Take Attendance</h1>
+
+<!-- ======================
+     Select Class & Date
+====================== -->
+<form method="get" th:action="@{/teacher/attendance/take/{classId}(classId=${schoolClass != null} ? ${schoolClass.id} : 0)}">
+    <div class="form-group">
+        <label>Class:</label>
+        <select name="classId" required>
+            <option th:each="cls : ${classes}" 
+                    th:value="${cls.id}" 
+                    th:text="${cls.name}"
+                    th:selected="${schoolClass != null and cls.id == schoolClass.id}">Class</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Date:</label>
+        <input type="date" name="date" th:value="${date != null} ? ${date} : ${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" required/>
+    </div>
+    <button type="submit" class="btn">Load Students</button>
+</form>
+
+<!-- ======================
+     Student Attendance
+====================== -->
+<form th:if="${students != null}" method="post" th:action="@{/teacher/attendance/save}">
+    <input type="hidden" name="classId" th:value="${schoolClass.id}"/>
+    <input type="hidden" name="date" th:value="${date}"/>
+
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Student Name</th>
+                <th>Present</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="student, iterStat : ${students}">
+                <td th:text="${iterStat.count}">1</td>
+                <td th:text="${student.firstName + ' ' + student.lastName}">Student Name</td>
+                <td>
+                    <input type="checkbox" name="presentStudentIds" th:value="${student.id}"
+                           th:checked="${presentStudentIds.contains(student.id)}"/>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button type="submit" class="btn">Save Attendance</button>
+</form>
+
+</body>
+</html>

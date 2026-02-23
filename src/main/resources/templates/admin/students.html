@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students Management · Admin</title>
+    <!-- Professional font & icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pjw3D1f4uHQ5kWl+4zFz8xjG+JxWht3d/UY5fJpTiwX+Uo+c1v2oV2k4xN3pGq2h2Y9wN5HsoKZ8V6Cl6kdpQA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <style>
+        /* ---------- DESIGN SYSTEM ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f1f5f9;   /* soft slate background */
+            color: #1e293b;
+            line-height: 1.5;
+            font-size: 0.9375rem;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --primary-soft: #eef2ff;
+            --primary-light: #818cf8;
+            --success: #10b981;
+            --success-dark: #059669;
+            --success-soft: #d1fae5;
+            --warning: #f59e0b;
+            --warning-soft: #fef3c7;
+            --danger: #ef4444;
+            --danger-dark: #dc2626;
+            --danger-soft: #fee2e2;
+            --info: #3b82f6;
+            --info-soft: #dbeafe;
+            --dark: #1e293b;
+            --dark-soft: #e2e8f0;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            --radius-card: 1rem;
+            --radius-element: 0.625rem;
+            --radius-button: 2rem;
+            --shadow-elevation: 0 4px 12px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.02);
+            --shadow-hover: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ---------- LAYOUT ---------- */
+        .container {
+            max-width: 1600px;
+            margin: 1.5rem auto;
+            padding: 0 2rem;
+        }
+
+        /* ---------- HEADER ---------- */
+        .page-header {
+            background: white;
+            padding: 1.25rem 2rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            backdrop-filter: blur(4px);
+            background: rgba(255,255,255,0.9);
+        }
+        .header-title h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            letter-spacing: -0.02em;
+        }
+        .header-title i {
+            color: var(--primary);
+            font-size: 1.8rem;
+            background: var(--primary-soft);
+            padding: 0.5rem;
+            border-radius: 14px;
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: white;
+            color: var(--gray-700);
+            padding: 0.6rem 1.5rem;
+            border-radius: var(--radius-button);
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: 1px solid var(--gray-200);
+            transition: var(--transition);
+            box-shadow: var(--shadow-elevation);
+        }
+        .back-link:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* ---------- SUMMARY CARDS (professional) ---------- */
+        .summary-card {
+            display: flex;
+            gap: 2rem;
+            background: white;
+            padding: 1.75rem 2rem;
+            border-radius: var(--radius-card);
+            box-shadow: var(--shadow-elevation);
+            margin: 2rem 0;
+            border: 1px solid var(--gray-100);
+        }
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+        .stat-icon {
+            background: var(--primary-soft);
+            color: var(--primary-dark);
+            width: 58px;
+            height: 58px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.12);
+        }
+        .stat-content {
+            display: flex;
+            flex-direction: column;
+        }
+        .stat-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            line-height: 1.2;
+        }
+        .stat-number.small {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        /* ---------- FILTERS (elevated) ---------- */
+        .class-filter-box {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            background: white;
+            padding: 1.25rem 1.5rem;
+            border-radius: var(--radius-card);
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-elevation);
+        }
+        .inline-select {
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-button);
+            border: 1px solid var(--gray-300);
+            background: white;
+            font-size: 0.9rem;
+            color: var(--gray-800);
+            font-weight: 500;
+            outline: none;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        .inline-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+        }
+        .filter-section {
+            margin-bottom: 2rem;
+        }
+        .filter-title {
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            color: var(--gray-500);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .filter-buttons {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 3rem;
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-elevation);
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 0.5rem 1.2rem;
+            border-radius: 2.5rem;
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--gray-600);
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+            font-size: 0.85rem;
+        }
+        .filter-btn i {
+            font-size: 0.8rem;
+        }
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 8px rgba(79, 70, 229, 0.25);
+        }
+        .filter-btn:hover:not(.active) {
+            background: var(--gray-100);
+            color: var(--gray-800);
+            border-color: var(--gray-300);
+        }
+        .btn-reset {
+            background: white;
+            border: 1px solid var(--gray-300);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            color: var(--gray-600);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        .btn-reset:hover {
+            background: var(--gray-100);
+            border-color: var(--gray-400);
+        }
+
+        /* ---------- TABLE PROFESSIONAL ---------- */
+        .table-wrapper {
+            background: white;
+            border-radius: var(--radius-card);
+            overflow: auto;
+            box-shadow: var(--shadow-elevation);
+            border: 1px solid var(--gray-200);
+            margin-top: 1rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1100px;
+            font-size: 0.9rem;
+        }
+        th {
+            text-align: left;
+            padding: 1rem 1.5rem;
+            background: var(--gray-50);
+            color: var(--gray-600);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.04em;
+            border-bottom: 1px solid var(--gray-200);
+            white-space: nowrap;
+        }
+        td {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--gray-100);
+            vertical-align: middle;
+            background: white;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        tr:hover td {
+            background: var(--gray-50);
+        }
+
+        /* tags & badges */
+        .class-tag, .subject-tag, .status-badge {
+            padding: 0.3rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+            white-space: nowrap;
+            border: 1px solid transparent;
+        }
+        .class-tag {
+            background: var(--primary-soft);
+            color: var(--primary-dark);
+            border-color: var(--primary-light);
+        }
+        .subject-tag {
+            background: #e0f2fe;
+            color: #075985;
+            border-color: #bae6fd;
+            margin: 0.125rem 0.25rem 0.125rem 0;
+        }
+        .status-ACTIVE {
+            background: var(--success-soft);
+            color: #065f46;
+            border-color: #a7f3d0;
+        }
+        .status-DISABLED {
+            background: var(--gray-200);
+            color: var(--gray-700);
+            border-color: var(--gray-300);
+        }
+        .status-GRADUATED {
+            background: var(--info-soft);
+            color: #1e40af;
+            border-color: #bfdbfe;
+        }
+        .status-WARNING {
+            background: var(--warning-soft);
+            color: #92400e;
+            border-color: #fde68a;
+        }
+
+        /* actions row */
+        .actions {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .btn {
+            border: none;
+            padding: 0.4rem 0.9rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            border-radius: 2rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: var(--transition);
+            background: white;
+            border: 1px solid var(--gray-200);
+            color: var(--gray-700);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .btn i {
+            font-size: 0.7rem;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+            border-color: transparent;
+        }
+        .btn-enable {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        .btn-disable {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+        .btn-class {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .btn-action {
+            background: #8b5cf6;
+            color: white;
+            border-color: #8b5cf6;
+        }
+        .btn-delete {
+            background: var(--gray-800);
+            color: white;
+            border-color: var(--gray-800);
+        }
+
+        .inline-form {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .promote-group {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .promote-select {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 2rem;
+            border: 1px solid var(--gray-300);
+            background: white;
+            max-width: 100px;
+        }
+
+        /* ---------- RESPONSIVE (mobile friendly) ---------- */
+        @media screen and (max-width: 992px) {
+            .container { padding: 0 1.25rem; }
+            .summary-card { flex-direction: column; gap: 1rem; padding: 1.5rem; }
+            .stat-item { width: 100%; }
+        }
+        @media screen and (max-width: 768px) {
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+            thead {
+                display: none;
+            }
+            tr {
+                margin-bottom: 1.5rem;
+                border: 1px solid var(--gray-200);
+                border-radius: var(--radius-card);
+                overflow: hidden;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            }
+            td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.9rem 1.2rem;
+                border-bottom: 1px solid var(--gray-100);
+                gap: 0.5rem;
+            }
+            td:last-child {
+                border-bottom: none;
+            }
+            td::before {
+                content: attr(data-label);
+                font-weight: 700;
+                color: var(--gray-600);
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 0.02em;
+                min-width: 110px;
+            }
+            .actions {
+                justify-content: flex-end;
+            }
+            .promote-group {
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
+        }
+        @media screen and (max-width: 480px) {
+            .filter-buttons { justify-content: center; }
+            .page-header { flex-direction: column; gap: 0.8rem; }
+            .back-link { width: 100%; justify-content: center; }
+        }
+
+        /* minor touches */
+        a, button { text-decoration: none; cursor: pointer; }
+        .text-muted { color: var(--gray-500); }
+        .font-mono { font-family: monospace; }
+    </style>
+</head>
+<body>
+<header class="page-header">
+    <div class="header-title">
+        <i class="fas fa-user-graduate"></i>
+        <h1>Students Management</h1>
+    </div>
+    <a th:href="@{/admin/dashboard}" class="back-link"><i class="fas fa-arrow-left"></i> Dashboard</a>
+</header>
+
+<div class="container">
+    <!-- Summary Card (refined) -->
+    <div class="summary-card">
+        <div class="stat-item">
+            <div class="stat-icon"><i class="fas fa-users"></i></div>
+            <div class="stat-content">
+                <span class="stat-label">Total enrolled</span>
+                <span class="stat-number" th:text="${totalStudents}">0</span>
+            </div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-icon" style="background:#e0f2fe; color:#0284c7;"><i class="fas fa-calendar-check"></i></div>
+            <div class="stat-content">
+                <span class="stat-label">Academic Year</span>
+                <span class="stat-number small" style="font-size:1.4rem; font-weight:600;">2026/2027</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters (elegant) -->
+    <div class="class-filter-box">
+        <form th:action="@{/admin/students}" method="get" style="display:flex; align-items:center; gap:12px; width:100%; flex-wrap:wrap;">
+            <label style="font-weight:600; font-size:0.8rem; color:var(--gray-500); text-transform:uppercase; display:flex; align-items:center; gap:0.3rem;"><i class="fas fa-chalkboard"></i> Filter by class:</label>
+            <select name="classId" class="inline-select" style="min-width:180px;" onchange="this.form.submit()">
+                <option value="">All Classes</option>
+                <option th:each="c : ${allClasses}" th:value="${c.id}" th:text="${c.className}" th:selected="${c.id == selectedClassId}"></option>
+            </select>
+            <input type="hidden" name="status" th:value="${selectedStatus}">
+            <a th:href="@{/admin/students}" class="btn-reset" th:if="${selectedClassId != null or selectedStatus != null}"><i class="fas fa-times"></i> Reset filters</a>
+        </form>
+    </div>
+
+    <div class="filter-section">
+        <div class="filter-title"><i class="fas fa-filter"></i> Student status</div>
+        <div class="filter-buttons">
+            <a th:href="@{/admin/students(classId=${selectedClassId})}" class="filter-btn" th:classappend="${selectedStatus == null} ? 'active' : ''"><i class="fas fa-list-ul"></i> All</a>
+            <a th:href="@{/admin/students(status='ACTIVE', classId=${selectedClassId})}" class="filter-btn" th:classappend="${selectedStatus?.name() == 'ACTIVE'} ? 'active' : ''"><i class="fas fa-check-circle"></i> Active</a>
+            <a th:href="@{/admin/students(status='DISABLED', classId=${selectedClassId})}" class="filter-btn" th:classappend="${selectedStatus?.name() == 'DISABLED'} ? 'active' : ''"><i class="fas fa-ban"></i> Disabled</a>
+            <a th:href="@{/admin/students(status='GRADUATED', classId=${selectedClassId})}" class="filter-btn" th:classappend="${selectedStatus?.name() == 'GRADUATED'} ? 'active' : ''"><i class="fas fa-graduation-cap"></i> Graduated</a>
+        </div>
+    </div>
+
+    <!-- Students Table (clean & professional) -->
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Student Info</th>
+                    <th>Current Class</th>
+                    <th>Enrolled Subjects</th>
+                    <th>Status</th>
+                    <th>Lifecycle Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="student : ${students}">
+                    <td data-label="Student Info">
+                        <div style="font-weight:700; color:var(--gray-900);" th:text="${student.fullName}"></div>
+                        <div style="font-size:0.7rem; color:var(--gray-500);" th:text="${student.admissionNumber}"></div>
+                        <div style="font-size:0.7rem; color:var(--gray-500);" th:text="${student.phone}"></div>
+                    </td>
+                    <td data-label="Current Class">
+                        <div th:if="${student.classes != null}">
+                            <span class="class-tag"><i class="fas fa-door-open"></i> [[${student.classes.className}]]</span>
+                        </div>
+                        <div th:if="${student.classes == null}" class="text-muted" style="font-style:italic;">Unassigned</div>
+                        <form th:action="@{/admin/students/assign-class/{id}(id=${student.id})}" method="post" class="inline-form">
+                            <select name="classId" class="inline-select" style="font-size:0.7rem; padding:0.25rem 0.5rem;">
+                                <option value="" disabled selected>Change</option>
+                                <option th:each="c : ${allClasses}" th:value="${c.id}" th:text="${c.className}"></option>
+                            </select>
+                            <button type="submit" class="btn btn-class" title="Assign class"><i class="fas fa-sync-alt"></i></button>
+                        </form>
+                    </td>
+                    <td data-label="Enrolled Subjects">
+                        <div th:if="${not #lists.isEmpty(student.subjects)}">
+                            <span th:each="sub : ${student.subjects}" class="subject-tag">[[${sub.subjectName}]]</span>
+                        </div>
+                        <div th:if="${#lists.isEmpty(student.subjects)}" class="text-muted" style="font-size:0.75rem;">No subjects</div>
+                    </td>
+                    <td data-label="Status">
+                        <span class="status-badge" th:text="${student.status}" th:classappend="'status-' + ${student.status}"></span>
+                    </td>
+                    <td data-label="Actions">
+                        <div class="actions">
+                            <form th:if="${student.status.name() != 'ACTIVE'}" th:action="@{/admin/students/enable/{id}(id=${student.id})}" method="post">
+                                <button class="btn btn-enable" type="submit" title="Activate"><i class="fas fa-check"></i> Enable</button>
+                            </form>
+                            <form th:if="${student.status.name() == 'ACTIVE'}" th:action="@{/admin/students/disable/{id}(id=${student.id})}" method="post">
+                                <button class="btn btn-disable" type="submit" title="Deactivate"><i class="fas fa-stop"></i> Disable</button>
+                            </form>
+                            <form th:action="@{/admin/students/promote/{id}(id=${student.id})}" method="post" class="promote-group">
+                                <select name="nextClassId" class="promote-select" required>
+                                    <option value="" disabled selected>Promote</option>
+                                    <option th:each="c : ${allClasses}" th:value="${c.id}" th:text="${c.className}"></option>
+                                </select>
+                                <button type="submit" class="btn btn-action"><i class="fas fa-level-up-alt"></i> Go</button>
+                            </form>
+                            <form th:action="@{/admin/students/delete/{id}(id=${student.id})}" method="post" onsubmit="return confirm('Permanently delete student data?');">
+                                <button class="btn btn-delete" type="submit" title="Delete permanently"><i class="fas fa-trash"></i> Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

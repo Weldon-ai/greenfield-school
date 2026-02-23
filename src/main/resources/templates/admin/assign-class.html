@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Curriculum - GREEN-FIELD SCHOOL</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a5f23;
+            --primary-light: #2e8b57;
+            --accent: #ffd700;
+            --bg-gray: #f4f7f6;
+            --white: #ffffff;
+            --text-dark: #2d3436;
+            --text-muted: #636e72;
+            --error: #e74c3c;
+            --shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-gray);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 40px auto;
+        }
+
+        .header-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .btn-back {
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            color: var(--primary-light);
+            transform: translateX(-5px);
+        }
+
+        .card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        h2 {
+            margin: 0 0 25px 0;
+            color: var(--primary);
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px solid #f1f1f1;
+            padding-bottom: 15px;
+        }
+
+        /* --- INFO BOX --- */
+        .info-box {
+            background-color: #f0f9f2;
+            border-left: 5px solid var(--primary);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--primary-light);
+            font-weight: 800;
+            letter-spacing: 0.05em;
+        }
+
+        .info-value {
+            font-size: 1.3rem;
+            color: var(--text-dark);
+            font-weight: 700;
+            margin-top: 5px;
+        }
+
+        .section-title {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 700;
+            color: var(--text-dark);
+            font-size: 1.1rem;
+        }
+
+        /* --- CHECKBOX LIST --- */
+        .class-selection-list {
+            max-height: 320px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 8px;
+            margin-bottom: 25px;
+            background: #fafafa;
+        }
+
+        /* Custom Scrollbar */
+        .class-selection-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        .class-selection-list::-webkit-scrollbar-thumb {
+            background: #d1d8e0;
+            border-radius: 10px;
+        }
+
+        .class-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 10px;
+            transition: all 0.2s;
+            cursor: pointer;
+            margin-bottom: 5px;
+            border: 1px solid transparent;
+        }
+
+        .class-item:hover {
+            background-color: var(--white);
+            border-color: var(--primary-light);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .class-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .class-item label {
+            cursor: pointer;
+            flex-grow: 1;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .class-code {
+            font-size: 0.85rem;
+            color: var(--white);
+            background: var(--primary-light);
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        /* --- ACTIONS --- */
+        .actions {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn-submit {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(26, 95, 35, 0.2);
+        }
+
+        .btn-cancel {
+            background-color: #f1f5f9;
+            color: var(--text-muted);
+            border: 1px solid #cbd5e1;
+            padding: 14px;
+            border-radius: 12px;
+            text-decoration: none;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel:hover {
+            background-color: #e2e8f0;
+            color: var(--text-dark);
+        }
+
+        /* --- ALERTS --- */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .alert-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .alert-error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+
+        .empty-state {
+            padding: 40px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <div class="header-box">
+        <a th:href="@{/admin/subjects}" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Back to Subjects
+        </a>
+    </div>
+
+    <div class="card">
+        <h2><i class="fas fa-book-open"></i> Manage Curriculum</h2>
+
+        <div th:if="${success}" class="alert alert-success">
+            <i class="fas fa-check-circle"></i> 
+            <span th:text="${success}">Subject assigned successfully!</span>
+        </div>
+        <div th:if="${error}" class="alert alert-error">
+            <i class="fas fa-exclamation-circle"></i> 
+            <span th:text="${error}">An error occurred.</span>
+        </div>
+
+        <form th:if="${subject != null}" th:action="@{/admin/subjects/assign-class/{id}(id=${subject.id})}" method="post">
+
+            <div class="info-box">
+                <div class="info-label">Current Subject</div>
+                <div class="info-value" th:text="${subject.name}">Mathematics</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">
+                    Course Code: <strong th:text="${subject.code}" style="color: var(--primary);">MATH101</strong>
+                </div>
+            </div>
+
+            <label class="section-title">Assign to Classes</label>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: -5px; margin-bottom: 15px;">
+                Check the boxes below to include this subject in the specific class curriculum.
+            </p>
+
+            <div class="class-selection-list">
+                <div th:each="cls : ${allClasses}" class="class-item">
+                    <input type="checkbox" 
+                           name="classIds" 
+                           th:value="${cls.id}" 
+                           th:id="'cls-' + ${cls.id}"
+                           th:checked="${subject.classes != null && subject.classes.contains(cls)}">
+                    
+                    <label th:for="'cls-' + ${cls.id}">
+                        <span th:text="${cls.className}">Grade 1</span>
+                        <span class="class-code" th:text="${cls.classCode}">G1</span>
+                    </label>
+                </div>
+
+                <div th:if="${#lists.isEmpty(allClasses)}" class="empty-state">
+                    <i class="fas fa-folder-open" style="font-size: 2.5rem; display: block; margin-bottom: 15px; opacity: 0.2;"></i>
+                    <p>No active classes found in the system.</p>
+                </div>
+            </div>
+
+            <div class="actions">
+                <a th:href="@{/admin/subjects}" class="btn-cancel">Cancel</a>
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-save"></i> Save Curriculum
+                </button>
+            </div>
+        </form>
+
+        <div th:if="${subject == null}" style="text-align: center; padding: 40px;">
+            <div style="background: #fff5f5; width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 2px solid var(--error);">
+                <i class="fas fa-search-minus" style="font-size: 2rem; color: var(--error);"></i>
+            </div>
+            <h3 style="color: var(--text-dark); margin-bottom: 10px;">Subject Record Missing</h3>
+            <p style="color: var(--text-muted); margin-bottom: 25px;">We couldn't find the subject you're looking for. It might have been deleted.</p>
+            <a th:href="@{/admin/subjects}" class="btn-cancel" style="display: inline-block;">Return to Catalog</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

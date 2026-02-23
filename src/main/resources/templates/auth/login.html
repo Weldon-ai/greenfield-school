@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>GREEN-FIELD SCHOOL | Login</title>
+
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        /* =============================
+           BACKGROUND SLIDES
+        ==============================*/
+
+        .slideshow {
+            position: fixed;
+            inset: 0;
+            z-index: -3;
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transform: scale(1);
+            transition: opacity 2.5s ease-in-out, transform 10s ease-in-out;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: scale(1.06);
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(
+                rgba(0,0,0,0.65),
+                rgba(0,0,0,0.65)
+            );
+            z-index: -2;
+        }
+
+        /* =============================
+           PARTICLE EFFECT
+        ==============================*/
+
+        canvas {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+        }
+
+        /* =============================
+           LOGIN CARD
+        ==============================*/
+
+        .login-container {
+            width: 420px;
+            padding: 55px;
+            border-radius: 28px;
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            box-shadow: 0 30px 70px rgba(0,0,0,0.6);
+            text-align: center;
+            animation: fadeInCard 1.5s ease forwards;
+        }
+
+        @keyframes fadeInCard {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Logo */
+        .logo {
+            width: 90px;
+            margin-bottom: 20px;
+            animation: logoReveal 2s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes logoReveal {
+            0% { opacity: 0; transform: scale(0.6) rotate(-10deg); }
+            100% { opacity: 1; transform: scale(1) rotate(0deg); }
+        }
+
+        h1 {
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+            animation: fadeTitle 2s ease forwards;
+            opacity: 0;
+        }
+
+        h2 {
+            font-weight: 300;
+            margin-bottom: 30px;
+            letter-spacing: 3px;
+            animation: fadeTitle 2.5s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeTitle {
+            to { opacity: 1; }
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            border: none;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            font-weight: bold;
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            color: white;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        }
+
+        .links {
+            margin-top: 20px;
+        }
+
+        .links a {
+            color: #a5d6a7;
+            text-decoration: none;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        .error {
+            background: rgba(211,47,47,0.9);
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .success {
+            background: rgba(56,142,60,0.9);
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="slideshow">
+    <div class="slide" style="background-image: url('/images/1.jpg')"></div>
+    <div class="slide" style="background-image: url('/images/2.jpg')"></div>
+    <div class="slide" style="background-image: url('/images/3.jpg')"></div>
+    <div class="slide" style="background-image: url('/images/4.jpg')"></div>
+</div>
+
+<div class="overlay"></div>
+<canvas id="particles"></canvas>
+
+<div class="login-container">
+
+    <!-- Replace with your actual logo path -->
+    <img src="/images/logo.png" class="logo" alt="School Logo"/>
+
+    <h1>GREEN-FIELD SCHOOL</h1>
+    <h2>Member Portal</h2>
+
+    <div th:if="${param.error != null}" class="error">
+        Invalid username or password
+    </div>
+
+    <div th:if="${param.logout != null}" class="success">
+        Logged out successfully
+    </div>
+
+    <form th:action="@{/login}" method="post">
+        <input type="text" name="username" placeholder="Username or Email" required />
+        <input type="password" name="password" placeholder="Password" required />
+        <button type="submit">LOGIN</button>
+    </form>
+
+    <div class="links">
+        <p><a th:href="@{/register}">Create Account</a></p>
+        <p><a th:href="@{/forgot-password}">Recover Credentials</a></p>
+    </div>
+</div>
+
+<script>
+    /* =============================
+       SLIDESHOW ENGINE
+    ==============================*/
+    const slides = document.querySelectorAll('.slide');
+    let current = 0;
+
+    window.onload = () => {
+        slides[current].classList.add('active');
+
+        setInterval(() => {
+            slides[current].classList.remove('active');
+            current = (current + 1) % slides.length;
+            slides[current].classList.add('active');
+        }, 7000);
+    };
+
+    /* =============================
+       PARTICLE SYSTEM
+    ==============================*/
+    const canvas = document.getElementById("particles");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let particlesArray = [];
+
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 2;
+            this.speedY = Math.random() * 0.5 + 0.2;
+        }
+        update() {
+            this.y -= this.speedY;
+            if (this.y < 0) this.y = canvas.height;
+        }
+        draw() {
+            ctx.fillStyle = "rgba(255,255,255,0.4)";
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    function initParticles() {
+        for (let i = 0; i < 80; i++) {
+            particlesArray.push(new Particle());
+        }
+    }
+
+    function animateParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particlesArray.forEach(p => {
+            p.update();
+            p.draw();
+        });
+        requestAnimationFrame(animateParticles);
+    }
+
+    initParticles();
+    animateParticles();
+</script>
+
+</body>
+</html>

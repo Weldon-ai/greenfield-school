@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle} ?: 'Super Admin Dashboard'">Super Admin Dashboard - Education Platform</title>
+    
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Super Admin Theme -->
+    <style th:inline="text">
+        :root {
+            /* Super Admin Theme - Distinct from regular admin */
+            --super-primary: #4C1D95; /* Dark Purple */
+            --super-primary-light: #7C3AED; /* Light Purple */
+            --super-secondary: #059669; /* Emerald Green */
+            --super-accent: #DC2626; /* Red for warnings */
+            --super-warning: #D97706; /* Amber */
+            --super-info: #0891B2; /* Cyan */
+            
+            /* Neutral Colors */
+            --super-dark: #1F2937;
+            --super-medium: #6B7280;
+            --super-light: #E5E7EB;
+            --super-bg: #F9FAFB;
+            --super-white: #FFFFFF;
+            
+            /* Dashboard Specific */
+            --super-sidebar-width: 280px;
+            --super-header-height: 80px;
+            --super-border-radius: 10px;
+            --super-box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            --super-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--super-bg);
+            color: var(--super-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .super-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Top Navigation Bar (Fixed) */
+        .super-top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: linear-gradient(135deg, var(--super-primary) 0%, var(--super-primary-light) 100%);
+            color: var(--super-white);
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(76, 29, 149, 0.2);
+        }
+        
+        .platform-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            color: var(--super-white);
+        }
+        
+        .platform-logo {
+            font-size: 1.75rem;
+        }
+        
+        .platform-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+        
+        .platform-version {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            margin-top: 0.25rem;
+        }
+        
+        .top-nav-center {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .quick-access {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .quick-access-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--super-white);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--super-transition);
+        }
+        
+        .quick-access-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .top-nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--super-secondary);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .user-menu {
+            position: relative;
+        }
+        
+        .user-menu-btn {
+            background: none;
+            border: none;
+            color: var(--super-white);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: var(--super-border-radius);
+            transition: var(--super-transition);
+        }
+        
+        .user-menu-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .user-avatar-super {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--super-secondary) 0%, var(--super-info) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        
+        .user-info-super {
+            text-align: left;
+        }
+        
+        .user-info-super h4 {
+            font-size: 0.9rem;
+            margin-bottom: 0.125rem;
+        }
+        
+        .user-info-super p {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+        
+        /* Sidebar */
+        .super-sidebar {
+            width: var(--super-sidebar-width);
+            background: var(--super-white);
+            position: fixed;
+            top: 70px;
+            left: 0;
+            bottom: 0;
+            border-right: 1px solid var(--super-light);
+            overflow-y: auto;
+            z-index: 999;
+            padding: 1.5rem 0;
+            transition: var(--super-transition);
+        }
+        
+        .super-nav-section {
+            margin-bottom: 1.5rem;
+            padding: 0 1.5rem;
+        }
+        
+        .super-nav-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--super-medium);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        
+        .super-nav-menu {
+            list-style: none;
+        }
+        
+        .super-nav-item {
+            margin-bottom: 0.5rem;
+        }
+        
+        .super-nav-link {
+            color: var(--super-dark);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 0.875rem 1rem;
+            border-radius: var(--super-border-radius);
+            transition: var(--super-transition);
+            position: relative;
+            border-left: 3px solid transparent;
+        }
+        
+        .super-nav-link:hover {
+            background-color: var(--super-bg);
+            color: var(--super-primary);
+            border-left-color: var(--super-primary-light);
+        }
+        
+        .super-nav-link.active {
+            background-color: rgba(124, 58, 237, 0.1);
+            color: var(--super-primary);
+            border-left-color: var(--super-primary);
+            font-weight: 500;
+        }
+        
+        .super-nav-link i {
+            width: 24px;
+            font-size: 1.125rem;
+            margin-right: 0.875rem;
+        }
+        
+        .super-nav-link span {
+            flex: 1;
+        }
+        
+        .nav-badge-super {
+            background-color: var(--super-accent);
+            color: var(--super-white);
+            font-size: 0.7rem;
+            padding: 0.125rem 0.5rem;
+            border-radius: 10px;
+            min-width: 20px;
+            text-align: center;
+        }
+        
+        /* Main Content */
+        .super-main-content {
+            flex: 1;
+            margin-left: var(--super-sidebar-width);
+            margin-top: 70px;
+            padding: 2rem;
+            transition: var(--super-transition);
+        }
+        
+        /* Dashboard Header */
+        .super-dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--super-light);
+        }
+        
+        .super-page-title h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--super-dark);
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--super-primary) 0%, var(--super-primary-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .super-page-title p {
+            color: var(--super-medium);
+            font-size: 1rem;
+        }
+        
+        .super-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .system-search {
+            position: relative;
+        }
+        
+        .system-search input {
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid var(--super-light);
+            border-radius: 50px;
+            width: 300px;
+            font-size: 0.9rem;
+            transition: var(--super-transition);
+        }
+        
+        .system-search input:focus {
+            outline: none;
+            border-color: var(--super-primary-light);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+        
+        .system-search i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--super-medium);
+        }
+        
+        /* Platform Overview Stats */
+        .platform-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+        
+        .platform-stat-card {
+            background: var(--super-white);
+            border-radius: var(--super-border-radius);
+            padding: 2rem;
+            box-shadow: var(--super-box-shadow);
+            border-top: 4px solid;
+            transition: var(--super-transition);
+        }
+        
+        .platform-stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .platform-stat-card.schools {
+            border-color: var(--super-primary);
+        }
+        
+        .platform-stat-card.users {
+            border-color: var(--super-secondary);
+        }
+        
+        .platform-stat-card.active {
+            border-color: var(--super-info);
+        }
+        
+        .platform-stat-card.revenue {
+            border-color: var(--super-accent);
+        }
+        
+        .platform-stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+        
+        .platform-stat-info h3 {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--super-medium);
+            margin-bottom: 0.5rem;
+        }
+        
+        .platform-stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--super-dark);
+        }
+        
+        .platform-stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            color: var(--super-white);
+        }
+        
+        .platform-stat-card.schools .platform-stat-icon {
+            background: linear-gradient(135deg, var(--super-primary) 0%, var(--super-primary-light) 100%);
+        }
+        
+        .platform-stat-card.users .platform-stat-icon {
+            background: linear-gradient(135deg, var(--super-secondary) 0%, #10B981 100%);
+        }
+        
+        .platform-stat-card.active .platform-stat-icon {
+            background: linear-gradient(135deg, var(--super-info) 0%, #06B6D4 100%);
+        }
+        
+        .platform-stat-card.revenue .platform-stat-icon {
+            background: linear-gradient(135deg, var(--super-accent) 0%, #EF4444 100%);
+        }
+        
+        .platform-stat-trend {
+            display: flex;
+            align-items: center;
+            font-size: 0.875rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--super-light);
+        }
+        
+        /* System Health Dashboard */
+        .system-health {
+            background: var(--super-white);
+            border-radius: var(--super-border-radius);
+            padding: 2rem;
+            box-shadow: var(--super-box-shadow);
+            margin-bottom: 2.5rem;
+        }
+        
+        .health-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .health-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--super-dark);
+        }
+        
+        .health-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--super-secondary);
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .health-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .health-metric {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: var(--super-bg);
+            border-radius: var(--super-border-radius);
+            transition: var(--super-transition);
+        }
+        
+        .health-metric:hover {
+            background: var(--super-light);
+        }
+        
+        .metric-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: var(--super-white);
+        }
+        
+        .metric-icon.server {
+            background-color: var(--super-primary);
+        }
+        
+        .metric-icon.database {
+            background-color: var(--super-secondary);
+        }
+        
+        .metric-icon.api {
+            background-color: var(--super-info);
+        }
+        
+        .metric-icon.storage {
+            background-color: var(--super-warning);
+        }
+        
+        .metric-info h4 {
+            font-size: 1rem;
+            color: var(--super-dark);
+            margin-bottom: 0.25rem;
+        }
+        
+        .metric-info p {
+            font-size: 0.875rem;
+            color: var(--super-medium);
+        }
+        
+        .metric-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--super-dark);
+            margin-left: auto;
+        }
+        
+        /* Schools Management Grid */
+        .schools-management {
+            background: var(--super-white);
+            border-radius: var(--super-border-radius);
+            padding: 2rem;
+            box-shadow: var(--super-box-shadow);
+            margin-bottom: 2.5rem;
+        }
+        
+        .schools-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .schools-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--super-dark);
+        }
+        
+        .add-school-btn {
+            background: linear-gradient(135deg, var(--super-primary) 0%, var(--super-primary-light) 100%);
+            color: var(--super-white);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--super-border-radius);
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--super-transition);
+        }
+        
+        .add-school-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(124, 58, 237, 0.2);
+        }
+        
+        .schools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .school-card {
+            background: var(--super-white);
+            border: 1px solid var(--super-light);
+            border-radius: var(--super-border-radius);
+            padding: 1.5rem;
+            transition: var(--super-transition);
+            position: relative;
+        }
+        
+        .school-card:hover {
+            border-color: var(--super-primary-light);
+            transform: translateY(-5px);
+            box-shadow: var(--super-box-shadow);
+        }
+        
+        .school-status {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--super-secondary);
+        }
+        
+        .status-pending {
+            background: rgba(217, 119, 6, 0.1);
+            color: var(--super-warning);
+        }
+        
+        .status-suspended {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--super-accent);
+        }
+        
+        .school-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .school-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--super-primary) 0%, var(--super-primary-light) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--super-white);
+            font-size: 1.5rem;
+        }
+        
+        .school-info h4 {
+            font-size: 1.125rem;
+            color: var(--super-dark);
+            margin-bottom: 0.25rem;
+        }
+        
+        .school-info p {
+            font-size: 0.875rem;
+            color: var(--super-medium);
+        }
+        
+        .school-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+            padding: 1rem 0;
+            border-top: 1px solid var(--super-light);
+            border-bottom: 1px solid var(--super-light);
+        }
+        
+        .school-metric {
+            text-align: center;
+        }
+        
+        .metric-number {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--super-dark);
+            display: block;
+        }
+        
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--super-medium);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .school-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .school-action-btn {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid var(--super-light);
+            border-radius: var(--super-border-radius);
+            background: none;
+            color: var(--super-medium);
+            cursor: pointer;
+            transition: var(--super-transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .school-action-btn:hover {
+            background: var(--super-bg);
+            color: var(--super-dark);
+        }
+        
+        /* Recent Activity Timeline */
+        .activity-timeline {
+            background: var(--super-white);
+            border-radius: var(--super-border-radius);
+            padding: 2rem;
+            box-shadow: var(--super-box-shadow);
+        }
+        
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .timeline-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--super-dark);
+        }
+        
+        .timeline-view-all {
+            color: var(--super-primary);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--super-light);
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+            padding-left: 2rem;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1rem;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--super-primary);
+            border: 3px solid var(--super-white);
+            box-shadow: 0 0 0 3px var(--super-primary-light);
+        }
+        
+        .timeline-content {
+            background: var(--super-bg);
+            padding: 1.5rem;
+            border-radius: var(--super-border-radius);
+        }
+        
+        .timeline-content h4 {
+            font-size: 1rem;
+            color: var(--super-dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .timeline-content p {
+            font-size: 0.875rem;
+            color: var(--super-medium);
+            margin-bottom: 0.5rem;
+        }
+        
+        .timeline-time {
+            font-size: 0.75rem;
+            color: var(--super-medium);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* Footer */
+        .super-footer {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--super-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--super-medium);
+            font-size: 0.875rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .footer-link {
+            color: var(--super-medium);
+            text-decoration: none;
+            transition: var(--super-transition);
+        }
+        
+        .footer-link:hover {
+            color: var(--super-primary);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .schools-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .super-sidebar {
+                width: 70px;
+                transform: translateX(-100%);
+            }
+            
+            .super-sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .super-main-content {
+                margin-left: 0;
+            }
+            
+            .system-search input {
+                width: 250px;
+            }
+            
+            .schools-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .super-nav-title,
+            .super-nav-link span {
+                display: none;
+            }
+            
+            .super-nav-link {
+                justify-content: center;
+                padding: 1rem;
+            }
+            
+            .super-nav-link i {
+                margin-right: 0;
+                font-size: 1.25rem;
+            }
+            
+            .mobile-menu-toggle {
+                display: block !important;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .platform-overview {
+                grid-template-columns: 1fr;
+            }
+            
+            .super-dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .super-header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .system-search input {
+                width: 200px;
+            }
+            
+            .top-nav-center {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .super-main-content {
+                padding: 1rem;
+            }
+            
+            .system-search {
+                display: none;
+            }
+            
+            .health-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--super-white);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+        
+        /* System Modal */
+        .system-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .system-modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--super-white);
+            border-radius: var(--super-border-radius);
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="super-top-nav">
+        <a th:href="@{/superadmin/dashboard}" class="platform-brand">
+            <i class="fas fa-globe-europe platform-logo"></i>
+            <div>
+                <div class="platform-name" th:text="#{platform.name}">EduPlatform Pro</div>
+                <div class="platform-version" th:text="'Super Admin Portal ' + ${version}">v3.0</div>
+            </div>
+        </a>
+        
+        <div class="top-nav-center">
+            <div class="quick-access">
+                <a th:href="@{/superadmin/schools/new}" class="quick-access-btn">
+                    <i class="fas fa-plus-circle"></i>
+                    <span th:text="#{superadmin.add.school}">Add School</span>
+                </a>
+                <a th:href="@{/superadmin/users/new}" class="quick-access-btn">
+                    <i class="fas fa-user-shield"></i>
+                    <span th:text="#{superadmin.add.admin}">Add Admin</span>
+                </a>
+                <a th:href="@{/superadmin/system/backup}" class="quick-access-btn">
+                    <i class="fas fa-database"></i>
+                    <span th:text="#{superadmin.backup}">Backup</span>
+                </a>
+            </div>
+        </div>
+        
+        <div class="top-nav-right">
+            <div class="system-status">
+                <span class="status-dot"></span>
+                <span th:text="#{superadmin.system.online}">System Online</span>
+            </div>
+            
+            <div class="user-menu">
+                <button class="user-menu-btn">
+                    <div class="user-avatar-super">
+                        <span th:text="${#strings.substring(user.firstName, 0, 1)} + ${#strings.substring(user.lastName, 0, 1)}">SA</span>
+                    </div>
+                    <div class="user-info-super">
+                        <h4 th:text="${user.firstName} + ' ' + ${user.lastName}">Super Admin</h4>
+                        <p th:text="#{user.role.superadmin}">System Administrator</p>
+                    </div>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+            
+            <button class="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+    
+    <!-- Sidebar -->
+    <aside class="super-sidebar" id="sidebar">
+        <div class="super-nav-section">
+            <h3 class="super-nav-title" th:text="#{menu.platform}">Platform</h3>
+            <ul class="super-nav-menu">
+                <li class="super-nav-item">
+                    <a th:href="@{/superadmin/dashboard}" class="super-nav-link active">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span th:text="#{menu.dashboard}">Dashboard</span>
+                    </a>
+                </li>
+                <li class="super-nav-item">
+                    <a th:href="@{/superadmin/analytics}" class="super-nav-link">
+                        <i class="fas fa-chart-network"></i>
+                        <span th:text="#{menu.analytics}">System Analytics</span>
+                    </a>
+                </li>
+                <li class="super-nav-item">
+                    <a th:href="@{/superadmin/monitoring}" class="super-nav-link">
+                        <i class="fas fa-heartbeat"></i>
+                        <span th:text="#{menu.monitoring}">System Health</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="super-nav-section">
+            <h3 class="super-nav-title" th:text="#{menu.management}">Management</h3>
+            <ul class="super-nav-menu">
+                <li class="super-nav-item">
+                    <a th:href="@{/superadmin/schools}" class="super-nav-link">
+                        <i class="fas fa-school"></i>
+                        <span th:text="#{menu.schools}">Schools</span>
+                        <span class="nav-badge-super" th:text="${schoolCount}">0</span>
+                    </a>
+                </li>
+                <li class="super-nav-item">
+                    <a th:href="@{/superadmin/users}" class="super-nav-link">
+                        <i class="fas fa-users-cog"></i>
+                        <span th:text="#{menu.admins}">System Admins</span>
+                    </a>
+                </li>
+                <li class="super-nav-item">
+                    <a th:href="@{/superadmin/subscriptions}" class="super-nav-link">
+                        <i class="fas fa-credit-card"></i>
+                        <span th:text="#{menu.subscriptions}">Subscriptions</span>
+                    </a>
+                </li>
+                <li class="super-nav-item">
+                    <a th:href="@{/superadmin/billing}" class="super-nav-link">
+                        <i class="fas fa-file-invoice"></i>
+                        <span th:text="#{menu.billing}">Billing</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="super-nav-section">
+            <h3 class="super-nav-title" th:text="#{menu.configuration}">Configuration</h3>
+            <ul class="super-nav-menu">
+                <li class="super-nav-item">
+                    <a th:href="@{/superadmin/system-settings}" class="super-nav-link">
+                        <i class="fas fa-sliders-h"></i>
+                        <span th:text="#{menu.system.settings}">System Settings</span>
+                    </a>
+                </li>
+                <li class="super-nav-item">
+                    <a th:href="@{/superadmin/email-templates}" class="super-nav-link">
+                        <i class="fas fa-envelope"></i>
+                        <span th:text="#{menu.email.templates}">Email Templates</span>
+                    </a>
+                </li>
+                <li class="super-nav-item">
+                    <a th:href="@{/superadmin/api-keys}" class="super-nav-link">
+                        <i class="fas fa-key"></i>
+                        <span th:text="#{menu.api.keys}">API Keys</span>
+                    </a>
+                </li>
+                <li class="super-nav-item">
+                    <a th:href="@{/superadmin/backup-restore}" class="super-nav-link">
+                        <i class="fas fa-database"></i>
+                        <span th:text="#{menu.backup.restore}">Backup & Restore</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="super-nav-section">
+            <h3 class="super-nav-title" th:text="#{menu.security}">Security</h3>
+            <ul class="super-nav-menu">
+                <li class="super-nav-item">
+                    <a th:href="@{/superadmin/audit-logs}" class="super-nav-link">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span th:text="#{menu.audit.logs}">Audit Logs</span>
+                    </a>
+                </li>
+                <li class="super-nav-item">
+                    <a th:href="@{/superadmin/login-history}" class="super-nav-link">
+                        <i class="fas fa-history"></i>
+                        <span th:text="#{menu.login.history}">Login History</span>
+                    </a>
+                </li>
+                <li class="super-nav-item">
+                    <a th:href="@{/superadmin/permissions}" class="super-nav-link">
+                        <i class="fas fa-user-lock"></i>
+                        <span th:text="#{menu.permissions}">Permissions</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="super-nav-section">
+            <h3 class="super-nav-title" th:text="#{menu.support}">Support</h3>
+            <ul class="super-nav-menu">
+                <li class="super-nav-item">
+                    <a th:href="@{/superadmin/tickets}" class="super-nav-link">
+                        <i class="fas fa-headset"></i>
+                        <span th:text="#{menu.support.tickets}">Support Tickets</span>
+                        <span class="nav-badge-super" th:text="${pendingTicketsCount}">0</span>
+                    </a>
+                </li>
+                <li class="super-nav-item">
+                    <a th:href="@{/superadmin/documentation}" class="super-nav-link">
+                        <i class="fas fa-book"></i>
+                        <span th:text="#{menu.documentation}">Documentation</span>
+                    </a>
+                </li>
+                <li class="super-nav-item">
+                    <a th:href="@{/logout}" class="super-nav-link">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span th:text="#{menu.logout}">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="super-main-content">
+        <!-- Dashboard Header -->
+        <header class="super-dashboard-header">
+            <div class="super-page-title">
+                <h1 th:text="${pageTitle} ?: #{superadmin.dashboard.title}">Super Admin Dashboard</h1>
+                <p th:text="#{superadmin.dashboard.subtitle}">Complete oversight of the education platform</p>
+            </div>
+            
+            <div class="super-header-actions">
+                <div class="system-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" 
+                           th:placeholder="#{superadmin.search.placeholder}" 
+                           placeholder="Search schools, admins, or reports...">
+                </div>
+                
+                <button class="add-school-btn" onclick="openAddSchoolModal()">
+                    <i class="fas fa-plus"></i>
+                    <span th:text="#{superadmin.add.school}">Add School</span>
+                </button>
+            </div>
+        </header>
+        
+        <!-- Platform Overview -->
+        <div class="platform-overview">
+            <div class="platform-stat-card schools">
+                <div class="platform-stat-header">
+                    <div class="platform-stat-info">
+                        <h3 th:text="#{superadmin.stats.schools}">Total Schools</h3>
+                        <div class="platform-stat-value" th:text="${platformStats.totalSchools}">0</div>
+                    </div>
+                    <div class="platform-stat-icon">
+                        <i class="fas fa-school"></i>
+                    </div>
+                </div>
+                <div class="platform-stat-trend">
+                    <i class="fas fa-arrow-up"></i>
+                    <span th:text="${platformStats.schoolGrowth} + '% growth'">5% growth</span>
+                    this month
+                </div>
+            </div>
+            
+            <div class="platform-stat-card users">
+                <div class="platform-stat-header">
+                    <div class="platform-stat-info">
+                        <h3 th:text="#{superadmin.stats.users}">Total Users</h3>
+                        <div class="platform-stat-value" th:text="${platformStats.totalUsers}">0</div>
+                    </div>
+                    <div class="platform-stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+                <div class="platform-stat-trend">
+                    <i class="fas fa-arrow-up"></i>
+                    <span th:text="${platformStats.userGrowth} + '% growth'">12% growth</span>
+                    this month
+                </div>
+            </div>
+            
+            <div class="platform-stat-card active">
+                <div class="platform-stat-header">
+                    <div class="platform-stat-info">
+                        <h3 th:text="#{superadmin.stats.active}">Active Schools</h3>
+                        <div class="platform-stat-value" th:text="${platformStats.activeSchools}">0</div>
+                    </div>
+                    <div class="platform-stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+                <div class="platform-stat-trend">
+                    <span th:text="${platformStats.activePercentage} + '% active'">95% active</span>
+                    of total schools
+                </div>
+            </div>
+            
+            <div class="platform-stat-card revenue">
+                <div class="platform-stat-header">
+                    <div class="platform-stat-info">
+                        <h3 th:text="#{superadmin.stats.revenue}">Monthly Revenue</h3>
+                        <div class="platform-stat-value" th:text="${#numbers.formatCurrency(platformStats.monthlyRevenue)}">$0</div>
+                    </div>
+                    <div class="platform-stat-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                </div>
+                <div class="platform-stat-trend">
+                    <i class="fas fa-arrow-up"></i>
+                    <span th:text="${platformStats.revenueGrowth} + '% growth'">15% growth</span>
+                    this month
+                </div>
+            </div>
+        </div>
+        
+        <!-- System Health -->
+        <div class="system-health">
+            <div class="health-header">
+                <h2 class="health-title" th:text="#{superadmin.system.health}">System Health</h2>
+                <div class="health-status">
+                    <i class="fas fa-check-circle"></i>
+                    <span th:text="#{superadmin.system.healthy}">All Systems Operational</span>
+                </div>
+            </div>
+            
+            <div class="health-grid">
+                <div class="health-metric">
+                    <div class="metric-icon server">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <div class="metric-info">
+                        <h4 th:text="#{superadmin.health.server}">Server</h4>
+                        <p th:text="#{superadmin.health.cpu.load}">CPU Load</p>
+                    </div>
+                    <div class="metric-value" th:text="${systemHealth.cpuLoad} + '%'">24%</div>
+                </div>
+                
+                <div class="health-metric">
+                    <div class="metric-icon database">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <div class="metric-info">
+                        <h4 th:text="#{superadmin.health.database}">Database</h4>
+                        <p th:text="#{superadmin.health.connections}">Active Connections</p>
+                    </div>
+                    <div class="metric-value" th:text="${systemHealth.dbConnections}">42</div>
+                </div>
+                
+                <div class="health-metric">
+                    <div class="metric-icon api">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <div class="metric-info">
+                        <h4 th:text="#{superadmin.health.api}">API</h4>
+                        <p th:text="#{superadmin.health.response.time}">Response Time</p>
+                    </div>
+                    <div class="metric-value" th:text="${systemHealth.apiResponseTime} + 'ms'">120ms</div>
+                </div>
+                
+                <div class="health-metric">
+                    <div class="metric-icon storage">
+                        <i class="fas fa-hdd"></i>
+                    </div>
+                    <div class="metric-info">
+                        <h4 th:text="#{superadmin.health.storage}">Storage</h4>
+                        <p th:text="#{superadmin.health.used}">Used Space</p>
+                    </div>
+                    <div class="metric-value" th:text="${systemHealth.storageUsed} + '%'">65%</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Schools Management -->
+        <div class="schools-management">
+            <div class="schools-header">
+                <h2 class="schools-title" th:text="#{superadmin.schools.management}">Schools Management</h2>
+                <button class="add-school-btn" onclick="openAddSchoolModal()">
+                    <i class="fas fa-plus"></i>
+                    <span th:text="#{superadmin.add.school}">Add School</span>
+                </button>
+            </div>
+            
+            <div class="schools-grid">
+                <div class="school-card" th:each="school : ${recentSchools}">
+                    <div class="school-status" th:classappend="'status-' + ${school.status}">
+                        <span th:text="${school.status}">Active</span>
+                    </div>
+                    
+                    <div class="school-header">
+                        <div class="school-logo">
+                            <i class="fas fa-school"></i>
+                        </div>
+                        <div class="school-info">
+                            <h4 th:text="${school.name}">Green-Field School</h4>
+                            <p th:text="${school.email}">contact@school.edu</p>
+                        </div>
+                    </div>
+                    
+                    <div class="school-metrics">
+                        <div class="school-metric">
+                            <span class="metric-number" th:text="${school.studentCount}">1248</span>
+                            <span class="metric-label" th:text="#{superadmin.metric.students}">Students</span>
+                        </div>
+                        <div class="school-metric">
+                            <span class="metric-number" th:text="${school.teacherCount}">86</span>
+                            <span class="metric-label" th:text="#{superadmin.metric.teachers}">Teachers</span>
+                        </div>
+                        <div class="school-metric">
+                            <span class="metric-number" th:text="${#numbers.formatCurrency(school.revenue)}">$42,580</span>
+                            <span class="metric-label" th:text="#{superadmin.metric.revenue}">Revenue</span>
+                        </div>
+                    </div>
+                    
+                    <div class="school-actions">
+                        <button class="school-action-btn" th:onclick="|viewSchool('${school.id}')|">
+                            <i class="fas fa-eye"></i>
+                            <span class="action-text" th:text="#{superadmin.action.view}">View</span>
+                        </button>
+                        <button class="school-action-btn" th:onclick="|editSchool('${school.id}')|">
+                            <i class="fas fa-edit"></i>
+                            <span class="action-text" th:text="#{superadmin.action.edit}">Edit</span>
+                        </button>
+                        <button class="school-action-btn" th:onclick="|manageSchool('${school.id}')|">
+                            <i class="fas fa-cog"></i>
+                            <span class="action-text" th:text="#{superadmin.action.manage}">Manage</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Activity Timeline -->
+        <div class="activity-timeline">
+            <div class="timeline-header">
+                <h2 class="timeline-title" th:text="#{superadmin.recent.activity}">Recent Activity</h2>
+                <a th:href="@{/superadmin/activity}" class="timeline-view-all">
+                    <span th:text="#{superadmin.view.all}">View All</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            
+            <div class="timeline">
+                <div class="timeline-item" th:each="activity : ${recentActivities}">
+                    <div class="timeline-content">
+                        <h4 th:text="${activity.title}">New School Registered</h4>
+                        <p th:text="${activity.description}">"Green-Field School" was registered by Super Admin</p>
+                        <div class="timeline-time">
+                            <i class="far fa-clock"></i>
+                            <span th:text="${#temporals.format(activity.timestamp, 'MMM dd, yyyy HH:mm')}">Jan 27, 2024 14:30</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="super-footer">
+            <div>
+                <p th:text="#{platform.copyright}">© 2024 EduPlatform Pro. All rights reserved.</p>
+                <p th:text="'Super Admin Portal ' + ${version}">v3.0</p>
+            </div>
+            <div class="footer-links">
+                <a th:href="@{/superadmin/privacy}" class="footer-link" th:text="#{footer.privacy}">Privacy Policy</a>
+                <a th:href="@{/superadmin/terms}" class="footer-link" th:text="#{footer.terms}">Terms of Service</a>
+                <a th:href="@{/superadmin/help}" class="footer-link" th:text="#{footer.help}">Help Center</a>
+            </div>
+        </footer>
+    </main>
+    
+    <!-- Add School Modal -->
+    <div class="system-modal" id="addSchoolModal">
+        <div class="modal-content">
+            <h2 th:text="#{superadmin.add.school}">Add New School</h2>
+            <!-- Form would be loaded via AJAX or thymeleaf fragment -->
+            <p th:text="#{superadmin.modal.coming.soon}">School registration form will appear here.</p>
+            <button onclick="closeModal()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--super-primary); color: white; border: none; border-radius: var(--super-border-radius); cursor: pointer;">
+                Close
+            </button>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const menuToggle = document.querySelector('.mobile-menu-toggle');
+            const sidebar = document.getElementById('sidebar');
+            
+            if (menuToggle) {
+                menuToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('active');
+                });
+            }
+            
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(event) {
+                if (window.innerWidth < 992) {
+                    if (!sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
+                        sidebar.classList.remove('active');
+                    }
+                }
+            });
+            
+            // School actions
+            window.viewSchool = function(schoolId) {
+                window.location.href = contextPath + 'superadmin/schools/' + schoolId;
+            };
+            
+            window.editSchool = function(schoolId) {
+                window.location.href = contextPath + 'superadmin/schools/' + schoolId + '/edit';
+            };
+            
+            window.manageSchool = function(schoolId) {
+                window.location.href = contextPath + 'superadmin/schools/' + schoolId + '/manage';
+            };
+            
+            // Modal functions
+            window.openAddSchoolModal = function() {
+                document.getElementById('addSchoolModal').classList.add('active');
+            };
+            
+            window.closeModal = function() {
+                document.getElementById('addSchoolModal').classList.remove('active');
+            };
+            
+            // Close modal on outside click
+            document.getElementById('addSchoolModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+            
+            // System search
+            const searchInput = document.querySelector('.system-search input');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        const query = this.value.trim();
+                        if (query.length > 0) {
+                            window.location.href = contextPath + 'superadmin/search?q=' + encodeURIComponent(query);
+                        }
+                    }
+                });
+            }
+        });
+        /*]]>*/
+    </script>
+</body>
+</html>

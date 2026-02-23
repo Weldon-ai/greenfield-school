@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Teacher Messaging Dashboard</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 20px; background: #f4f6f9; }
+        h2 { color: #1e3a8a; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #2563eb; color: #fff; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .button, button { padding: 8px 14px; background-color: #2563eb; color: #fff; text-decoration: none; border-radius: 4px; border: none; cursor: pointer; display: inline-block; }
+        .button:hover, button:hover { background-color: #1e40af; }
+        .section { display: none; }
+        .active { display: block; }
+        .nav { margin-bottom: 20px; }
+        .nav a { margin-right: 10px; cursor: pointer; }
+        textarea, input, select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        label { display: block; margin-top: 15px; font-weight: bold; }
+        .unread-row { font-weight: bold; background-color: #ebf5fb !important; }
+    </style>
+    <script th:inline="javascript">
+        function showSection(sectionId) {
+            var sections = document.getElementsByClassName('section');
+            for (var i = 0; i < sections.length; i++) {
+                sections[i].classList.remove('active');
+            }
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        function viewMessage(subject, sender, receiver, sentAt, body, isRead) {
+            document.getElementById('viewSubject').textContent = subject;
+            document.getElementById('viewSender').textContent = sender;
+            document.getElementById('viewReceiver').textContent = receiver;
+            document.getElementById('viewSentAt').textContent = sentAt;
+            document.getElementById('viewBody').textContent = body;
+            document.getElementById('viewStatus').textContent = isRead ? 'Read' : 'Unread';
+            showSection('view');
+        }
+    </script>
+</head>
+<body>
+    <h2>Teacher Messaging Dashboard</h2>
+
+    <div class="nav">
+        <a class="button" onclick="showSection('inbox')">📥 Inbox</a>
+        <a class="button" onclick="showSection('sent')">📤 Sent</a>
+        <a class="button" onclick="showSection('compose')">✍️ Compose</a>
+    </div>
+
+    <div id="inbox" class="section active">
+        <h3>Inbox</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>From</th>
+                    <th>Subject</th>
+                    <th>Sent At</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="msg : ${inbox}" th:class="${!msg.isRead ? 'unread-row' : ''}">
+                    <td th:text="${msg.sender.fullName}"></td>
+                    <td>
+                        <a href="#" th:text="${msg.subject != null ? msg.subject : '(No Subject)'}" 
+                           th:onclick="'viewMessage('
+                           + '\'' + ${msg.subject} + '\',' 
+                           + '\'' + ${msg.sender.fullName} + '\',' 
+                           + '\'' + ${msg.recipient.fullName} + '\',' 
+                           + '\'' + ${#temporals.format(msg.sentAt,'dd-MM-yyyy HH:mm')} + '\',' 
+                           + '\'' + ${#strings.escapeJavaScript(msg.content)} + '\',' 
+                           + ${msg.isRead} 
+                           + ')'"></a>
+                    </td>
+                    <td th:text="${#temporals.format(msg.sentAt,'dd-MM-yyyy HH:mm')}"></td>
+                    <td th:text="${msg.isRead ? 'Read' : 'Unread'}"></td>
+                    <td>
+                        <form th:action="@{/teacher/messages/delete/{id}(id=${msg.id})}" method="post" onsubmit="return confirm('Delete message?')">
+                            <button type="submit" style="background-color: #dc2626;">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(inbox)}">
+                    <td colspan="5" style="text-align:center; color:red;">No messages in your inbox</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="sent" class="section">
+        <h3>Sent Messages</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>To</th>
+                    <th>Subject</th>
+                    <th>Sent At</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="msg : ${sentMessages}">
+                    <td th:text="${msg.recipient.fullName}"></td>
+                    <td th:text="${msg.subject}"></td>
+                    <td th:text="${#temporals.format(msg.sentAt,'dd-MM-yyyy HH:mm')}"></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(sentMessages)}">
+                    <td colspan="3" style="text-align:center; color:red;">No messages sent yet</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="compose" class="section">
+        <h3>Compose New Message</h3>
+        <form th:action="@{/teacher/messages/send}" method="post">
+            <label>Recipient (Staff/Student/Parent):</label>
+            <select name="recipientId" required>
+                <option value="" disabled selected>Select Recipient...</option>
+                <option th:each="u : ${users}" th:value="${u.id}" th:text="${u.fullName + ' (' + u.role + ')'}"></option>
+            </select>
+
+            <label>Subject:</label>
+            <input type="text" name="subject" placeholder="Enter subject" required>
+
+            <label>Message Content:</label>
+            <textarea name="content" rows="6" placeholder="Type your message here..." required></textarea>
+
+            <button type="submit" style="margin-top: 20px;">🚀 Send Message</button>
+        </form>
+    </div>
+
+    <div id="view" class="section">
+        <h3>Message Details</h3>
+        <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #ddd;">
+            <p><strong>Subject:</strong> <span id="viewSubject"></span></p>
+            <p><strong>From:</strong> <span id="viewSender"></span></p>
+            <p><strong>To:</strong> <span id="viewReceiver"></span></p>
+            <p><strong>Date:</strong> <span id="viewSentAt"></span></p>
+            <hr>
+            <p><strong>Message:</strong></p>
+            <p id="viewBody" style="white-space: pre-wrap; line-height: 1.6;"></p>
+            <br>
+            <button onclick="showSection('inbox')">Back to Inbox</button>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Assignments | Student Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.9);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --accent: #f43f5e;
+            --success: #10b981;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        .header-title h1 { font-size: 2.2rem; font-weight: 800; color: var(--text-main); }
+        .header-title span { color: var(--primary); }
+        .dashboard-btn {
+            background: white; color: var(--text-main); padding: 0.75rem 1.5rem;
+            border-radius: 12px; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transition: all 0.3s;
+        }
+        .dashboard-btn:hover { transform: translateX(-5px); background: var(--primary); color: white; }
+
+        .glass-card {
+            background: var(--glass-bg); backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border); border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05); overflow: hidden;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .table-header {
+            padding: 1.5rem 2rem; background: rgba(255,255,255,0.5); border-bottom: 1px solid #f1f5f9;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { padding: 1.25rem 2rem; text-align: left; font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; }
+        td { padding: 1.5rem 2rem; border-top: 1px solid #f1f5f9; vertical-align: middle; }
+
+        tr:hover td { background: rgba(248,250,252,0.8); }
+
+        .title-cell { font-weight: 700; color: var(--text-main); }
+        .desc-cell { color: var(--text-muted); max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .class-tag { background: #eef2ff; color: var(--primary); padding: 0.4rem 0.8rem; border-radius: 8px; font-size: 0.85rem; font-weight: 600; }
+        .due-date-pill { display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600; padding: 0.4rem 0.8rem; border-radius: 8px; background: #f1f5f9; }
+        .urgent { background: #fff1f2; color: var(--accent); }
+
+        .btn-submit { background: var(--primary); color: white; padding: 0.6rem 1.2rem; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 0.5rem; transition: 0.3s; }
+        .btn-submit:hover { background: var(--primary-dark); transform: scale(1.05); box-shadow: 0 10px 15px -3px rgba(79,70,229,0.3); }
+
+        .empty-state { padding: 4rem; text-align: center; }
+        .empty-state i { font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem; }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 768px) { body { padding: 1rem; } .header { flex-direction: column; align-items: flex-start; gap: 1rem; } .desc-cell, th:nth-child(2), td:nth-child(2) { display: none; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header class="header">
+        <div class="header-title">
+            <h1>My <span>Assignments</span></h1>
+            <p th:text="'Welcome back, ' + ${studentName}">Welcome back, Student</p>
+        </div>
+        <a th:href="@{/student/dashboard}" class="dashboard-btn">
+            <i class="fas fa-chevron-left"></i>
+            Dashboard
+        </a>
+    </header>
+
+    <main class="glass-card">
+        <div class="table-header">
+            <h2 style="font-weight: 700; font-size: 1.1rem;">Active Tasks</h2>
+            <div class="class-tag" th:text="${className}">General Class</div>
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Assignment Title</th>
+                        <th>Description</th>
+                        <th>Subject Class</th>
+                        <th>Due Date</th>
+                        <th>Weight</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr th:each="assignment : ${assignments}">
+                        <td class="title-cell" th:text="${assignment.title}">Title</td>
+                        <td class="desc-cell" th:text="${assignment.description}">Description</td>
+                        <td>
+                            <span class="class-tag" th:text="${assignment.classes != null ? assignment.classes.name : 'N/A'}">Class Name</span>
+                        </td>
+                        <td>
+                            <span class="due-date-pill" th:text="${#dates.format(assignment.dueDate, 'yyyy-MM-dd')}">2024-01-01</span>
+                        </td>
+                        <td style="font-weight: 600;" th:text="${assignment.maxMarks + ' pts'}">100 pts</td>
+                        <td>
+                            <a class="btn-submit" th:href="@{/student/assignments/submit(id=${assignment.id})}">
+                                <i class="fas fa-paper-plane"></i>
+                                Submit
+                            </a>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(assignments)}">
+                        <td colspan="6">
+                            <div class="empty-state">
+                                <i class="fas fa-folder-open"></i>
+                                <h3>Everything is turned in!</h3>
+                                <p>No active assignments were found for your class.</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const today = new Date();
+    document.querySelectorAll('.due-date-pill').forEach(pill => {
+        const dueDate = new Date(pill.innerText);
+        if (dueDate < today) {
+            pill.classList.add('urgent');
+            pill.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + pill.innerText;
+        } else {
+            pill.innerHTML = '<i class="far fa-calendar-alt"></i> ' + pill.innerText;
+        }
+    });
+});
+</script>
+</body>
+</html>

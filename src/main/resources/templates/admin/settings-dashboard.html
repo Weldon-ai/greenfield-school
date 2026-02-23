@@ -1,0 +1,644 @@
+ 
+ <!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
+    <title>Admin | School Settings</title>
+
+    <!-- Professional fonts & icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- ========== PROFESSIONAL SETTINGS DASHBOARD ========== -->
+    <!-- Clean, accessible, and cohesive with admin suite -->
+    <style>
+        /* ---------- CSS RESET & VARIABLES ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Premium color system – indigo primary */
+            --primary: #4f46e5;
+            --primary-light: #6366f1;
+            --primary-dark: #4338ca;
+            --primary-soft: #eef2ff;
+            
+            --bg-main: #f8fafc;
+            --bg-surface: #ffffff;
+            --border-light: #e2e8f0;
+            --border-focus: #94a3b8;
+            
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --text-on-primary: #ffffff;
+            
+            --success: #10b981;
+            --success-bg: #d1fae5;
+            --danger: #ef4444;
+            --danger-bg: #fee2e2;
+            --warning: #f59e0b;
+            --warning-bg: #fef3c7;
+            
+            --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+            --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.03);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.03);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.03);
+            
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-body);
+            line-height: 1.6;
+            font-size: 0.9375rem;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* ---------- PAGE HEADER – clear navigation ---------- */
+        .page-header {
+            background: var(--bg-surface);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-xs);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .header-title i {
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+
+        .header-title h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            letter-spacing: -0.02em;
+            margin: 0;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--primary-soft);
+            color: var(--primary-dark);
+            padding: 0.5rem 1.2rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* ---------- MAIN LAYOUT – centered card ---------- */
+        .main-container {
+            max-width: 1100px;
+            margin: 2.5rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .settings-card {
+            background: var(--bg-surface);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-light);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1.8rem 2rem;
+            border-bottom: 1px solid var(--border-light);
+            background: linear-gradient(to right, #fafcff, white);
+        }
+
+        .card-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            margin-bottom: 0.25rem;
+        }
+
+        .card-header p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ---------- FORM LAYOUT – two columns for dense data ---------- */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem 2rem;
+            padding: 2rem 2rem 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        .form-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: var(--text-heading);
+            margin-bottom: 0.35rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            font-size: 0.9rem;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            background: white;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.08);
+        }
+
+        /* ---------- CHECKBOX GROUP – modern toggle-like pills ---------- */
+        .checkbox-group-title {
+            grid-column: span 2;
+            margin-top: 0.5rem;
+            margin-bottom: 0.25rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .checkbox-grid {
+            grid-column: span 2;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .checkbox-item {
+            display: inline-flex;
+            align-items: center;
+            background: var(--bg-main);
+            border: 1px solid var(--border-light);
+            border-radius: 30px;
+            padding: 0.35rem 1rem 0.35rem 0.8rem;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .checkbox-item:hover {
+            background: var(--primary-soft);
+            border-color: var(--primary-light);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            margin-right: 0.5rem;
+            accent-color: var(--primary);
+            transform: scale(0.9);
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-body);
+            text-transform: none;
+            letter-spacing: normal;
+            margin-bottom: 0;
+            cursor: pointer;
+        }
+
+        /* ---------- LOGO UPLOAD SECTION – clean file input ---------- */
+        .logo-section {
+            grid-column: span 2;
+            background: var(--bg-main);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-top: 0.5rem;
+            border: 1px dashed var(--border-light);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .logo-preview-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .logo-preview {
+            max-height: 70px;
+            max-width: 200px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-light);
+            background: white;
+            padding: 0.25rem;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            flex: 1;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            background: white;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .file-input-wrapper input[type="file"]::file-selector-button {
+            background: var(--primary-soft);
+            border: none;
+            border-radius: 30px;
+            padding: 0.4rem 1rem;
+            margin-right: 1rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            border: 1px solid var(--border-light);
+            transition: var(--transition);
+        }
+
+        .file-input-wrapper input[type="file"]::file-selector-button:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* ---------- ALERT MESSAGES – premium toasts ---------- */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-lg);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 0.9rem;
+            border: 1px solid transparent;
+        }
+
+        .alert i {
+            font-size: 1.1rem;
+        }
+
+        .alert-success {
+            background: var(--success-bg);
+            color: #065f46;
+            border-color: #a7f3d0;
+        }
+
+        .alert-error {
+            background: var(--danger-bg);
+            color: #991b1b;
+            border-color: #fecaca;
+        }
+
+        .error-list {
+            margin: 0.5rem 0 0 1.2rem;
+            list-style-type: disc;
+        }
+
+        /* ---------- ACTION BUTTONS ---------- */
+        .form-actions {
+            grid-column: span 2;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-light);
+            margin-top: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.7rem 1.8rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+            cursor: pointer;
+            background: white;
+            border: 1px solid var(--border-light);
+            color: var(--text-body);
+        }
+
+        .btn i {
+            font-size: 0.85rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-light);
+        }
+
+        .btn-outline:hover {
+            background: var(--bg-main);
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media screen and (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+                padding: 1.5rem;
+                gap: 1rem;
+            }
+
+            .form-group.full-width,
+            .checkbox-grid,
+            .logo-section,
+            .form-actions {
+                grid-column: span 1;
+            }
+
+            .checkbox-grid {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .checkbox-item {
+                width: 100%;
+            }
+
+            .logo-section {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .main-container { padding: 0 1rem; }
+            .card-header { padding: 1.5rem; }
+        }
+
+        /* ---------- UTILITIES ---------- */
+        .text-muted { color: var(--text-muted); }
+    </style>
+</head>
+<body>
+
+<!-- ========== PROFESSIONAL HEADER ========== -->
+<header class="page-header">
+    <div class="header-title">
+        <i class="fas fa-cogs"></i>
+        <h1>School Settings</h1>
+    </div>
+    <a href="/admin/dashboard" class="back-link">
+        <i class="fas fa-arrow-left"></i> Dashboard
+    </a>
+</header>
+
+<!-- ========== MAIN SETTINGS CARD ========== -->
+<div class="main-container">
+    <div class="settings-card">
+        <div class="card-header">
+            <h2>General Configuration</h2>
+            <p>Manage your institution's profile, academic calendar, and system preferences</p>
+        </div>
+
+        <!-- ===== FORM ===== -->
+        <form th:action="@{/admin/settings/save}"
+              th:object="${schoolSettings}"
+              method="post"
+              enctype="multipart/form-data">
+
+            <!-- Success / Error Messages -->
+            <div style="padding: 0 2rem; padding-top: 1rem;">
+                <div th:if="${successMessage}" class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    <span th:text="${successMessage}">Settings saved successfully</span>
+                </div>
+
+                <div th:if="${#fields.hasErrors('*')}" class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Please fix the following errors:</span>
+                    <ul class="error-list">
+                        <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- ===== FORM GRID – two columns for efficient space ===== -->
+            <div class="form-grid">
+                <!-- School Name -->
+                <div class="form-group">
+                    <label>School Name *</label>
+                    <input type="text" th:field="*{name}" placeholder="e.g., Green-Field School" required>
+                </div>
+
+                <!-- Motto -->
+                <div class="form-group">
+                    <label>Motto</label>
+                    <input type="text" th:field="*{motto}" placeholder="Excellence in education">
+                </div>
+
+                <!-- Address -->
+                <div class="form-group">
+                    <label>Address</label>
+                    <input type="text" th:field="*{address}" placeholder="123 Education St">
+                </div>
+
+                <!-- City -->
+                <div class="form-group">
+                    <label>City</label>
+                    <input type="text" th:field="*{city}" placeholder="Nairobi">
+                </div>
+
+                <!-- County -->
+                <div class="form-group">
+                    <label>County</label>
+                    <input type="text" th:field="*{county}" placeholder="Kiambu">
+                </div>
+
+                <!-- Country -->
+                <div class="form-group">
+                    <label>Country</label>
+                    <input type="text" th:field="*{country}" placeholder="Kenya">
+                </div>
+
+                <!-- Contact Email -->
+                <div class="form-group">
+                    <label>Contact Email</label>
+                    <input type="email" th:field="*{contactEmail}" placeholder="admin@school.edu">
+                </div>
+
+                <!-- Contact Phone -->
+                <div class="form-group">
+                    <label>Contact Phone</label>
+                    <input type="text" th:field="*{contactPhone}" placeholder="+254 700 123456">
+                </div>
+
+                <!-- Academic Year -->
+                <div class="form-group">
+                    <label>Academic Year</label>
+                    <input type="text" th:field="*{academicYear}" placeholder="2025-2026">
+                </div>
+
+                <!-- Current Term -->
+                <div class="form-group">
+                    <label>Current Term</label>
+                    <input type="text" th:field="*{currentTerm}" placeholder="Term 1">
+                </div>
+
+                <!-- Theme -->
+                <div class="form-group">
+                    <label>Theme</label>
+                    <input type="text" th:field="*{theme}" placeholder="indigo">
+                </div>
+
+                <!-- Maintenance Message (full width) -->
+                <div class="form-group full-width">
+                    <label>Maintenance Message</label>
+                    <textarea th:field="*{maintenanceMessage}" rows="3" placeholder="System will be upgraded on Saturday..."></textarea>
+                </div>
+
+                <!-- ===== CHECKBOXES – modern pill style ===== -->
+                <div class="checkbox-group-title">
+                    <i class="fas fa-toggle-on" style="margin-right: 0.3rem; color: var(--primary);"></i> System Features & Status
+                </div>
+                <div class="checkbox-grid">
+                    <span class="checkbox-item">
+                        <input type="checkbox" th:field="*{registrationOpen}" id="regOpen">
+                        <label for="regOpen">Registration Open</label>
+                    </span>
+                    <span class="checkbox-item">
+                        <input type="checkbox" th:field="*{autoPromotionEnabled}" id="autoPromo">
+                        <label for="autoPromo">Auto Promotion</label>
+                    </span>
+                    <span class="checkbox-item">
+                        <input type="checkbox" th:field="*{enableStudentPortal}" id="studentPortal">
+                        <label for="studentPortal">Student Portal</label>
+                    </span>
+                    <span class="checkbox-item">
+                        <input type="checkbox" th:field="*{enableTeacherPortal}" id="teacherPortal">
+                        <label for="teacherPortal">Teacher Portal</label>
+                    </span>
+                    <span class="checkbox-item">
+                        <input type="checkbox" th:field="*{enableParentPortal}" id="parentPortal">
+                        <label for="parentPortal">Parent Portal</label>
+                    </span>
+                    <span class="checkbox-item">
+                        <input type="checkbox" th:field="*{maintenanceMode}" id="maintenanceMode">
+                        <label for="maintenanceMode">Maintenance Mode</label>
+                    </span>
+                    <span class="checkbox-item">
+                        <input type="checkbox" th:field="*{darkMode}" id="darkMode">
+                        <label for="darkMode">Dark Mode</label>
+                    </span>
+                </div>
+
+                <!-- ===== LOGO UPLOAD – integrated card ===== -->
+                <div class="logo-section">
+                    <div class="logo-preview-container">
+                        <span style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.3rem;">Current logo</span>
+                        <img th:if="${schoolSettings.id != null}"
+                             th:src="@{'/school-logo/' + ${schoolSettings.id}}"
+                             alt="School logo"
+                             class="logo-preview">
+                        <span th:unless="${schoolSettings.id != null}" class="logo-preview" 
+                              style="display: flex; align-items: center; justify-content: center; background: #f1f5f9; color: var(--text-muted); font-size: 0.75rem; padding: 0.8rem;">
+                            <i class="fas fa-image" style="margin-right: 0.3rem;"></i> No logo
+                        </span>
+                    </div>
+                    <div class="file-input-wrapper">
+                        <label style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--text-heading); margin-bottom: 0.25rem; display: block;">
+                            Upload New Logo
+                        </label>
+                        <input type="file" name="logoFile" accept="image/*">
+                        <span style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.3rem; display: block;">
+                            Recommended: 200x60px, PNG or SVG
+                        </span>
+                    </div>
+                </div>
+
+                <!-- ===== FORM ACTIONS ===== -->
+                <div class="form-actions">
+                    <button type="reset" class="btn btn-outline">
+                        <i class="fas fa-undo-alt"></i> Reset
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Settings
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- subtle footer -->
+    <div style="text-align: center; margin-top: 1.5rem; color: var(--text-muted); font-size: 0.75rem;">
+        <i class="fas fa-shield-alt"></i> Changes are applied immediately and logged
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Student Dashboard - GREEN-FIELD SCHOOL</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --primary: #1a5f23;
+            --primary-light: #2e8b57;
+            --accent: #ffd700;
+            --bg-gray: #f4f7f6;
+            --white: #ffffff;
+            --text-dark: #2d3436;
+            --text-muted: #636e72;
+            --shadow: 0 4px 15px rgba(0,0,0,0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-gray);
+            color: var(--text-dark);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* --- SIDEBAR NAVIGATION --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--white);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 2000;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .sidebar-menu {
+            padding: 1rem 0;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            gap: 12px;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .menu-link:hover, .menu-link.active {
+            background: #f0f9f2;
+            color: var(--primary);
+            border-right: 4px solid var(--primary);
+        }
+
+        /* --- MAIN CONTENT AREA --- */
+        .main-wrapper {
+            flex-grow: 1;
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            transition: var(--transition);
+        }
+
+        /* --- NAVBAR --- */
+        .navbar {
+            height: 70px;
+            background: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+
+        .nav-left { display: flex; align-items: center; gap: 15px; }
+        .hamburger {
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: none; /* Desktop hidden */
+            color: var(--primary);
+        }
+
+        /* --- CONTENT CARDS --- */
+        .content-container {
+            padding: 2rem 1.5rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .hero-banner {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 20px;
+            padding: 2rem;
+            color: white;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        /* --- DASHBOARD GRID --- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .service-card {
+            background: var(--white);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition);
+            border: 1px solid transparent;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-light);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #eee;
+            border-radius: 10px;
+            margin-top: 5px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-light);
+            border-radius: 10px;
+        }
+
+        /* --- OVERLAY FOR MOBILE --- */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1500;
+            display: none;
+        }
+
+        /* --- RESPONSIVE LOGIC --- */
+        @media (max-width: 992px) {
+            .sidebar { left: -100%; }
+            .sidebar.active { left: 0; }
+            .main-wrapper { margin-left: 0; width: 100%; }
+            .hamburger { display: block; }
+            .sidebar-overlay.active { display: block; }
+        }
+
+        @media (max-width: 600px) {
+            .content-container { padding: 1rem; }
+            .dashboard-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .service-card h2 { font-size: 0.9rem; }
+            .service-card p { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="overlay"></div>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <i class="fas fa-graduation-cap" style="color: var(--primary); font-size: 1.5rem;"></i>
+        <h2 style="font-size: 1.1rem; color: var(--primary);">GreenField Portal</h2>
+    </div>
+    <nav class="sidebar-menu">
+        <a href="#" class="menu-link active"><i class="fas fa-home"></i> Dashboard</a>
+        <a th:href="@{/student/classes}" class="menu-link"><i class="fas fa-chalkboard"></i> My Classes</a>
+        <a th:href="@{/student/assignments}" class="menu-link"><i class="fas fa-tasks"></i> Assignments</a>
+        <a th:href="@{/student/timetable}" class="menu-link"><i class="fas fa-calendar-alt"></i> Timetable</a>
+        <a th:href="@{/student/exams}" class="menu-link"><i class="fas fa-file-invoice"></i> Results</a>
+        <a th:href="@{/student/fees}" class="menu-link"><i class="fas fa-credit-card"></i> Finance</a>
+        <a th:href="@{/student/profile}" class="menu-link"><i class="fas fa-user-cog"></i> Profile Settings</a>
+    </nav>
+    <div style="padding: 1.5rem; border-top: 1px solid #eee;">
+        <a href="/logout" class="menu-link" style="color: #e74c3c;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+</aside>
+
+<div class="main-wrapper">
+    <header class="navbar">
+        <div class="nav-left">
+            <i class="fas fa-bars hamburger" id="menu-toggle"></i>
+            <h2 style="font-size: 1rem; font-weight: 600;">Student Dashboard</h2>
+        </div>
+        <div style="display: flex; gap: 20px; align-items: center;">
+            <i class="far fa-bell" style="font-size: 1.2rem; cursor: pointer;"></i>
+            <div style="width: 35px; height: 35px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">S</div>
+        </div>
+    </header>
+
+    <main class="content-container">
+        <div class="hero-banner">
+            <h1 style="font-size: 1.5rem; margin-bottom: 5px;">Welcome back, <span th:text="${studentName} ?: 'Student'">Student</span>!</h1>
+            <p style="opacity: 0.9; font-size: 0.9rem;">You have 3 assignments due this week. Stay focused!</p>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #e8f5e9; color: #2e7d32;"><i class="fas fa-user-check"></i></div>
+                <div><small style="color: var(--text-muted);">Attendance</small><br><strong>94.2%</strong></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #fff8e1; color: #fbc02d;"><i class="fas fa-star"></i></div>
+                <div><small style="color: var(--text-muted);">GPA Score</small><br><strong>3.85</strong></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #e3f2fd; color: #1976d2;"><i class="fas fa-book"></i></div>
+                <div><small style="color: var(--text-muted);">Courses</small><br><strong>6 Enrolled</strong></div>
+            </div>
+        </div>
+
+        <h3 style="margin-bottom: 1.2rem;">Services & Tools</h3>
+
+        <div class="dashboard-grid">
+            <a th:href="@{/student/classes}" class="service-card">
+                <i class="fas fa-book-reader" style="color: var(--primary); font-size: 1.5rem;"></i>
+                <h2>My Classes</h2>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Biology, Math + 4 more</p>
+                <div class="progress-bar"><div class="progress-fill" style="width: 75%;"></div></div>
+            </a>
+
+            <a th:href="@{/student/assignments}" class="service-card" style="position: relative;">
+                <span style="position: absolute; top: 10px; right: 10px; background: #ff4757; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem;">3 Pending</span>
+                <i class="fas fa-edit" style="color: #f39c12; font-size: 1.5rem;"></i>
+                <h2>Assignments</h2>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Submit homework & tasks</p>
+            </a>
+
+            <a th:href="@{/student/attendance}" class="service-card">
+                <i class="fas fa-calendar-check" style="color: #27ae60; font-size: 1.5rem;"></i>
+                <h2>Attendance</h2>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">View monthly records</p>
+            </a>
+
+            <a th:href="@{/student/exams}" class="service-card">
+                <i class="fas fa-chart-line" style="color: #8e44ad; font-size: 1.5rem;"></i>
+                <h2>Exams & Results</h2>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Download report cards</p>
+            </a>
+
+            <a th:href="@{/student/resources}" class="service-card">
+                <i class="fas fa-file-download" style="color: #2980b9; font-size: 1.5rem;"></i>
+                <h2>E-Library</h2>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">PDFs, Notes, and Videos</p>
+            </a>
+
+            <a th:href="@{/student/fees}" class="service-card">
+                <i class="fas fa-wallet" style="color: #c0392b; font-size: 1.5rem;"></i>
+                <h2>Fees & Dues</h2>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Pay online via portal</p>
+            </a>
+
+            <a th:href="@{/student/notifications}" class="service-card">
+                <i class="fas fa-bullhorn" style="color: #16a085; font-size: 1.5rem;"></i>
+                <h2>Announcements</h2>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Stay updated</p>
+            </a>
+
+            <a th:href="@{/student/timetable}" class="service-card">
+                <i class="fas fa-clock" style="color: #7f8c8d; font-size: 1.5rem;"></i>
+                <h2>Timetable</h2>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Weekly schedules</p>
+            </a>
+        </div>
+    </main>
+</div>
+
+<script>
+    const menuToggle = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+
+    function toggleMenu() {
+        sidebar.classList.toggle('active');
+        overlay.classList.toggle('active');
+    }
+
+    menuToggle.addEventListener('click', toggleMenu);
+    overlay.addEventListener('click', toggleMenu);
+
+    // Auto-close sidebar on mobile if a link is clicked
+    document.querySelectorAll('.menu-link').forEach(link => {
+        link.addEventListener('click', () => {
+            if(window.innerWidth < 992) toggleMenu();
+        });
+    });
+</script>
+
+</body>
+</html>

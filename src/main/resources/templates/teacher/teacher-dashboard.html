@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Teacher Dashboard | Green-Field School</title>
+
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #2563eb;
+            --success: #059669;
+            --danger: #dc2626;
+            --background: #f8fafc;
+            --card-bg: #ffffff;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Inter", "Segoe UI", sans-serif;
+            background: var(--background);
+            color: var(--text-dark);
+        }
+
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-left h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .welcome-text {
+            font-size: 0.9rem;
+            opacity: 0.85;
+        }
+
+        .logout-btn {
+            background: var(--danger);
+            border: none;
+            padding: 0.55rem 1.2rem;
+            border-radius: 6px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            opacity: 0.9;
+        }
+
+        main {
+            max-width: 1300px;
+            margin: auto;
+            padding: 2rem;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 2px solid var(--border);
+            color: var(--primary);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.4rem;
+            transition: 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+        }
+
+        .card-icon {
+            font-size: 1.8rem;
+            margin-bottom: 0.7rem;
+        }
+
+        .card h3 {
+            font-size: 1rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .card p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.9rem;
+        }
+
+        .btn {
+            display: inline-block;
+            font-size: 0.8rem;
+            padding: 0.45rem 0.9rem;
+            border-radius: 5px;
+            background: var(--secondary);
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.2s ease;
+        }
+
+        .btn:hover {
+            background: var(--primary);
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.2rem;
+            font-size: 0.8rem;
+            background: #eef2f7;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.8rem;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="header-left">
+        <div style="font-size: 2rem;">🎓</div>
+        <div>
+            <h1>Teacher Dashboard</h1>
+            <div class="welcome-text" th:text="'Welcome, ' + ${teacherName}"></div>
+        </div>
+    </div>
+    <button class="logout-btn" onclick="location.href='/logout'">Logout</button>
+</header>
+
+<main>
+
+    <!-- Academic -->
+    <div class="section">
+        <div class="section-title">Academic Management</div>
+        <div class="grid">
+            <div class="card"><div class="card-icon">📚</div><h3>My Classes</h3><p>View assigned classes and streams.</p><a class="btn" th:href="@{/teacher/classes}">Open</a></div>
+            <div class="card"><div class="card-icon">📘</div><h3>Lesson Plans</h3><p>Create and manage structured lesson plans.</p><a class="btn" th:href="@{/teacher/lessons}">Open</a></div>
+            <div class="card"><div class="card-icon">🗂️</div><h3>Scheme of Work</h3><p>Track syllabus coverage and objectives.</p><a class="btn" th:href="@{/teacher/schemes}">Open</a></div>
+            <div class="card"><div class="card-icon">📖</div><h3>Curriculum Resources</h3><p>Access approved learning materials.</p><a class="btn" th:href="@{/teacher/resources}">Open</a></div>
+        </div>
+    </div>
+
+    <!-- Students -->
+    <div class="section">
+        <div class="section-title">Student Management</div>
+        <div class="grid">
+            <div class="card"><div class="card-icon">👤</div><h3>Student Profiles</h3><p>View academic and personal records.</p><a class="btn" th:href="@{/teacher/students}">Open</a></div>
+            <div class="card"><div class="card-icon">📊</div><h3>Attendance</h3><p>Record and review daily attendance.</p><a class="btn" th:href="@{/teacher/attendance}">Open</a></div>
+            <div class="card"><div class="card-icon">⚖️</div><h3>Discipline Records</h3><p>Monitor student behavior reports.</p><a class="btn" th:href="@{/teacher/discipline}">Open</a></div>
+            <div class="card"><div class="card-icon">🏠</div><h3>Homework</h3><p>Assign and track submissions.</p><a class="btn" th:href="@{/teacher/homework}">Open</a></div>
+        </div>
+    </div>
+
+    <!-- Assessment -->
+    <div class="section">
+        <div class="section-title">Assessment & Exams</div>
+        <div class="grid">
+            <div class="card"><div class="card-icon">📝</div><h3>Assignments</h3><p>Create and grade assignments.</p><a class="btn" th:href="@{/teacher/assignments}">Open</a></div>
+            <div class="card"><div class="card-icon">✍️</div><h3>Marks Entry</h3><p>Enter CAT and exam scores.</p><a class="btn" th:href="@{/teacher/exams}">Open</a></div>
+            <div class="card"><div class="card-icon">📈</div><h3>Performance Analytics</h3><p>Analyze academic performance trends.</p><a class="btn" th:href="@{/teacher/analytics}">Open</a></div>
+            <div class="card"><div class="card-icon">📄</div><h3>Report Cards</h3><p>Generate and review report cards.</p><a class="btn" th:href="@{/teacher/reports}">Open</a></div>
+        </div>
+    </div>
+
+    <!-- Communication -->
+    <div class="section">
+        <div class="section-title">Communication</div>
+        <div class="grid">
+            <div class="card"><div class="card-icon">💬</div><h3>Messages</h3><p>Internal staff and student messaging.</p><a class="btn" th:href="@{/teacher/messages}">Open</a></div>
+            <div class="card"><div class="card-icon">👨‍👩‍👧</div><h3>Parent Communication</h3><p>Engage parents professionally.</p><a class="btn" th:href="@{/teacher/parents}">Open</a></div>
+            <div class="card"><div class="card-icon">🔔</div><h3>Notifications</h3><p>System and academic alerts.</p><a class="btn" th:href="@{/teacher/notifications}">Open</a></div>
+        </div>
+    </div>
+
+</main>
+
+<footer>
+    © 2026 Green-Field School · Teacher Portal v1.0
+</footer>
+
+</body>
+</html>

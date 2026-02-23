@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Master Results Entry | SMS</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: 30px auto; padding: 30px; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .header-section { border-bottom: 2px solid #e5e7eb; margin-bottom: 20px; padding-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        h2 { color: #1e3a8a; margin: 0; }
+        .exam-info { color: #64748b; font-size: 0.95em; margin-top: 5px; }
+        .class-badge { background: #dbeafe; color: #1e40af; padding: 4px 12px; border-radius: 20px; font-size: 0.9em; font-weight: bold; }
+        
+        /* Table responsive wrapper */
+        .table-wrapper { overflow-x: auto; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; background: #fff; min-width: 800px; }
+        th, td { border: 1px solid #edf2f7; padding: 10px; text-align: center; }
+        th { background-color: #f8fafc; color: #475569; font-size: 0.8em; text-transform: uppercase; }
+        .student-col { text-align: left; min-width: 200px; background-color: #fcfcfd; position: sticky; left: 0; z-index: 1; }
+        
+        input[type="number"] { width: 60px; padding: 6px; border-radius: 4px; border: 1px solid #cbd5e1; text-align: center; }
+        input:focus { border-color: #2563eb; outline: none; box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1); }
+        
+        .btn-save { padding: 12px 30px; background-color: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 20px; }
+        .btn-save:hover { background-color: #059669; }
+        .back-btn { text-decoration: none; color: #64748b; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header-section">
+        <div>
+            <h2 th:text="${exam.term} + ' - Master Result Entry'">Termly Results</h2>
+            <div class="exam-info">
+                <span class="class-badge" th:text="${exam.classes.displayName}">Class</span>
+                <span th:text="' | Date: ' + ${exam.examDate}"></span>
+            </div>
+        </div>
+        <a th:href="@{/admin/exams}" class="back-btn">&larr; Back to Exams</a>
+    </div>
+
+    
+
+    <form th:action="@{/admin/exams/results/save-master/{examId}(examId=${exam.id})}" method="post">
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="student-col">Student Name</th>
+                        <th th:each="subject : ${subjects}" th:text="${subject.name}">Subject</th>
+                        <th style="background-color: #fef3c7;">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="student : ${students}">
+                        <td class="student-col">
+                            <div th:text="${student.fullName}" style="font-weight: 600;"></div>
+                            <small th:text="${student.admissionNumber}" style="color: #94a3b8;"></small>
+                            <input type="hidden" name="studentIds" th:value="${student.id}">
+                        </td>
+
+                        <td th:each="subject : ${subjects}">
+                            <input type="number" 
+                                   step="0.1" 
+                                   th:name="'marks_' + ${student.id} + '_' + ${subject.id}"
+                                   min="0" max="100" 
+                                   placeholder="—">
+                        </td>
+
+                        <td style="background-color: #fffbeb; font-weight: bold; color: #b45309;">
+                            -
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="text-align: right;">
+            <button type="submit" class="btn-save">💾 Save All Subjects & Marks</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Optional: Simple JS to highlight active row
+    document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('focus', (e) => {
+            e.target.closest('tr').style.backgroundColor = '#f1f5f9';
+        });
+        input.addEventListener('blur', (e) => {
+            e.target.closest('tr').style.backgroundColor = '';
+        });
+    });
+</script>
+</body>
+</html>

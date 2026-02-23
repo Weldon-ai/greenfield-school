@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Exams & Results</title>
+    <style>
+        body { font-family: Arial; margin: 20px; }
+        h2 { color: #2F4F4F; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        th { background-color: #228B22; color: white; }
+    </style>
+</head>
+<body>
+
+<h2>📘 Upcoming Exams</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Subject</th>
+            <th>Date</th>
+            <th>Term</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="exam : ${exams}">
+            <td th:text="${exam.subject}"></td>
+            <td th:text="${exam.examDate}"></td>
+            <td th:text="${exam.term}"></td>
+        </tr>
+        <tr th:if="${exams.size() == 0}">
+            <td colspan="3">No exams scheduled.</td>
+        </tr>
+    </tbody>
+</table>
+
+<h2>🏆 Exam Results</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Subject</th>
+            <th>Marks</th>
+            <th>Grade</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="r : ${results}">
+            <td th:text="${r.exam.subject}"></td>
+            <td th:text="${r.marks}"></td>
+            <td th:text="${r.grade}"></td>
+        </tr>
+        <tr th:if="${results.size() == 0}">
+            <td colspan="3">No results published yet.</td>
+        </tr>
+    </tbody>
+</table>
+
+<a th:href="@{/student/dashboard}">⬅ Back to Dashboard</a>
+
+</body>
+</html>

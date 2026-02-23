@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+    <nav th:fragment="headerNavbar" class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/admin/settings-dashboard">
+                <img th:if="${globalLogo}" th:src="${globalLogo}" 
+                     alt="Logo" width="40" height="40" class="d-inline-block align-text-top me-2">
+                <span th:text="${schoolName != null ? schoolName : 'GreenField School'}">Brand</span>
+            </a>
+            </div>
+    </nav>
+</body>
+</html>

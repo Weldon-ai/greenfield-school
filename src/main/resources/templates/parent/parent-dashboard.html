@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Parent Portal - GREEN-FIELD SCHOOL</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f8fafc;
+            color: #2d3748;
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            color: white;
+            padding: 1.8rem 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-bottom: 4px solid #f59e0b;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        .brand-icon {
+            font-size: 2.2rem;
+            background: rgba(255, 255, 255, 0.1);
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .brand-text h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.3rem;
+        }
+
+        .welcome-message {
+            font-size: 1rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .child-selector {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.6rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-1px);
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 2.5rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .dashboard-title h2 {
+            font-size: 1.6rem;
+            color: #1e3a8a;
+            font-weight: 600;
+        }
+
+        .dashboard-title p {
+            color: #64748b;
+            font-size: 1rem;
+        }
+
+        .quick-stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.2rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+            border-left: 4px solid #2563eb;
+        }
+
+        .stat-icon {
+            font-size: 1.8rem;
+            color: #2563eb;
+            background: #eff6ff;
+            padding: 0.8rem;
+            border-radius: 8px;
+        }
+
+        .stat-content h3 {
+            font-size: 0.9rem;
+            color: #64748b;
+            font-weight: 500;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-content .value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e3a8a;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.8rem;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.8rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+            border-color: #2563eb;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, #2563eb, #3b82f6);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .card-icon {
+            font-size: 2.2rem;
+            color: #2563eb;
+            margin-bottom: 1.2rem;
+            background: #eff6ff;
+            width: 64px;
+            height: 64px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .card-header h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1e293b;
+            line-height: 1.3;
+        }
+
+        .badge {
+            background: #f0f9ff;
+            color: #0369a1;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .card-content p {
+            color: #64748b;
+            margin-bottom: 1.8rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        .card-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .card-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(to right, #2563eb, #3b82f6);
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1.8rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .card-button:hover {
+            background: linear-gradient(to right, #1d4ed8, #2563eb);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(37, 99, 235, 0.2);
+        }
+
+        .card-button::after {
+            content: '→';
+            margin-left: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .card-button:hover::after {
+            transform: translateX(4px);
+        }
+
+        .notification-badge {
+            background: #ef4444;
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        footer {
+            background: #1e293b;
+            color: #cbd5e1;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-links a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .copyright {
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 1.2rem;
+                text-align: center;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .quick-stats {
+                flex-direction: column;
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .feature-card {
+                padding: 1.5rem;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 1.5rem 1rem;
+            }
+
+            main {
+                padding: 0 1rem;
+            }
+
+            .brand-section {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .header-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .child-selector, .logout-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-container">
+        <div class="brand-section">
+            <div class="brand-icon">👨‍👩‍👧‍👦</div>
+            <div class="brand-text">
+                <h1>Parent Portal</h1>
+                <p class="welcome-message" th:text="'Welcome, ' + ${#authentication.name} + '!'"></p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <select class="child-selector">
+                <option>Select Child</option>
+                <option>Sarah Johnson - Grade 8</option>
+                <option>Michael Johnson - Grade 5</option>
+            </select>
+            <button class="logout-btn" onclick="location.href='/logout'">Logout</button>
+        </div>
+    </div>
+</header>
+
+<main>
+    <div class="dashboard-header">
+        <div class="dashboard-title">
+            <h2>Student Overview Dashboard</h2>
+            <p>Monitor your child's academic progress and school activities</p>
+        </div>
+        <div class="current-date">
+            <span id="currentDate"></span>
+        </div>
+    </div>
+
+    <div class="quick-stats">
+        <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-content">
+                <h3>Overall Grade Average</h3>
+                <div class="value">A- (91%)</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <div class="stat-content">
+                <h3>Attendance Rate</h3>
+                <div class="value">98%</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📝</div>
+            <div class="stat-content">
+                <h3>Pending Assignments</h3>
+                <div class="value">2</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="feature-card">
+            <div class="card-icon">📈</div>
+            <div class="card-header">
+                <h2>Child's Academic Progress</h2>
+                <span class="badge">Updated Today</span>
+            </div>
+            <div class="card-content">
+                <p>Detailed analysis of grades, assignment completion, and teacher feedback across all subjects.</p>
+            </div>
+            <div class="card-actions">
+                <a class="card-button" th:href="@{/parent/progress}">View Progress</a>
+                <div class="notification-badge">3</div>
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <div class="card-icon">📊</div>
+            <div class="card-header">
+                <h2>Attendance Record</h2>
+                <span class="badge">Real-time</span>
+            </div>
+            <div class="card-content">
+                <p>Monitor daily attendance, view historical records, and receive absence notifications.</p>
+            </div>
+            <div class="card-actions">
+                <a class="card-button" th:href="@{/parent/attendance}">View Attendance</a>
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <div class="card-icon">💬</div>
+            <div class="card-header">
+                <h2>Teacher Communication</h2>
+                <span class="badge">Secure</span>
+            </div>
+            <div class="card-content">
+                <p>Direct messaging system to communicate with teachers and school administration.</p>
+            </div>
+            <div class="card-actions">
+                <a class="card-button" th:href="@{/parent/messages}">Open Messages</a>
+                <div class="notification-badge">5</div>
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <div class="card-icon">💰</div>
+            <div class="card-header">
+                <h2>Fees & Payments</h2>
+                <span class="badge">Secure</span>
+            </div>
+            <div class="card-content">
+                <p>View fee statements, payment history, pending dues, and make online payments.</p>
+            </div>
+            <div class="card-actions">
+                <a class="card-button" th:href="@{/parent/fees}">Manage Fees</a>
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <div class="card-icon">🏆</div>
+            <div class="card-header">
+                <h2>Exam Results & Reports</h2>
+                <span class="badge">New</span>
+            </div>
+            <div class="card-content">
+                <p>Access detailed exam reports, progress analytics, and performance comparison charts.</p>
+            </div>
+            <div class="card-actions">
+                <a class="card-button" th:href="@{/parent/exams}">View Results</a>
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <div class="card-icon">🗓️</div>
+            <div class="card-header">
+                <h2>Class Timetable</h2>
+                <span class="badge">Weekly</span>
+            </div>
+            <div class="card-content">
+                <p>View daily/weekly schedule, room assignments, and teacher contact information.</p>
+            </div>
+            <div class="card-actions">
+                <a class="card-button" th:href="@{/parent/timetable}">View Schedule</a>
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <div class="card-icon">🎯</div>
+            <div class="card-header">
+                <h2>School Events Calendar</h2>
+                <span class="badge">3 Upcoming</span>
+            </div>
+            <div class="card-content">
+                <p>Stay updated with school events, parent-teacher meetings, holidays, and important dates.</p>
+            </div>
+            <div class="card-actions">
+                <a class="card-button" th:href="@{/parent/events}">View Events</a>
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <div class="card-icon">🔔</div>
+            <div class="card-header">
+                <h2>School Notifications</h2>
+                <span class="badge">Important</span>
+            </div>
+            <div class="card-content">
+                <p>Receive and manage important announcements, alerts, and updates from the school.</p>
+            </div>
+            <div class="card-actions">
+                <a class="card-button" th:href="@{/parent/notifications}">View Alerts</a>
+                <div class="notification-badge">7</div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <div class="footer-content">
+        <div class="copyright">
+            <p>© 2023 GREEN-FIELD SCHOOL • Parent Portal v3.2</p>
+            <p style="margin-top: 0.5rem; font-size: 0.8rem;">Confidential Educational Data</p>
+        </div>
+        <div class="footer-links">
+            <a href="/parent/help">Help Center</a>
+            <a href="/parent/contact">Contact School</a>
+            <a href="/parent/privacy">Privacy Policy</a>
+            <a href="/parent/terms">Terms of Use</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Set current date
+    const dateElement = document.getElementById('currentDate');
+    const now = new Date();
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    dateElement.textContent = now.toLocaleDateString('en-US', options);
+</script>
+
+</body>
+</html>

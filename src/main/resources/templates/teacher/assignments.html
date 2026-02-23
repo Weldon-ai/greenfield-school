@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Teacher Assignments | Greenfield SMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 30px; background-color: #f8fafc; color: #1e293b; }
+        h1, h2 { color: #1e3a8a; }
+        .main-container { display: flex; gap: 40px; align-items: flex-start; }
+        
+        /* Form Styling */
+        form { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border: 1px solid #e2e8f0; width: 400px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.85rem; color: #475569; }
+        input, select, textarea { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; }
+        
+        /* Table Styling */
+        .table-container { flex-grow: 1; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        th { background-color: #f1f5f9; color: #64748b; padding: 15px; text-align: left; font-size: 0.75rem; text-transform: uppercase; }
+        td { padding: 15px; border-top: 1px solid #f1f5f9; font-size: 0.95rem; }
+        
+        /* Buttons */
+        .btn { padding: 8px 12px; color: white; text-decoration: none; border-radius: 6px; font-size: 0.85rem; font-weight: 600; display: inline-block; border: none; cursor: pointer; }
+        .btn-edit { background-color: #3b82f6; }
+        .btn-delete { background-color: #ef4444; }
+        .btn-grade { background-color: #f59e0b; }
+        .btn-save { background-color: #10b981; width: 100%; margin-top: 10px; }
+        .btn:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+<h1><i class="fas fa-chalkboard-teacher"></i> Assignments Management</h1>
+<hr style="border: 0; height: 1px; background: #e2e8f0; margin-bottom: 30px;">
+
+<div class="main-container">
+    
+    <div>
+        <h2 th:text="${assignment.id} != null ? 'Edit Assignment' : 'Create New Assignment'"></h2>
+        <form th:action="@{/teacher/assignments/save}" th:object="${assignment}" method="post">
+            <input type="hidden" th:field="*{id}"/>
+            
+            <label>Title</label>
+            <input type="text" th:field="*{title}" required placeholder="Enter assignment title"/>
+            
+            <label>Description</label>
+            <textarea th:field="*{description}" rows="3" placeholder="Instructions for students..."></textarea>
+            
+            <div style="display: flex; gap: 10px;">
+                <div style="flex: 1;">
+                    <label>Due Date</label>
+                    <input type="date" th:field="*{dueDate}" required/>
+                </div>
+                <div style="flex: 1;">
+                    <label>Max Marks</label>
+                    <input type="number" th:field="*{maxMarks}" min="1" required/>
+                </div>
+            </div>
+            
+            <label>Assign to Class</label>
+            <select th:field="*{classes}" required>
+                <option value="">-- Select Class --</option>
+                <option th:each="cls : ${classes}" 
+                        th:value="${cls.id}" 
+                        th:text="${cls.className}">Class Name</option>
+            </select>
+            
+            <button type="submit" class="btn btn-save">
+                <i class="fas fa-paper-plane"></i> Save Assignment
+            </button>
+            <a th:if="${assignment.id != null}" th:href="@{/teacher/assignments}" 
+               style="display:block; text-align:center; margin-top:10px; font-size:0.8rem; color:#64748b;">Cancel Edit</a>
+        </form>
+    </div>
+
+    <div class="table-container">
+        <h2>All Assignments</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Assignment Title</th>
+                    <th>Class</th>
+                    <th>Due Date</th>
+                    <th>Marks</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="assignmentItem : ${assignments}">
+                    <td style="font-weight: 600;" th:text="${assignmentItem.title}">Title</td>
+                    <td>
+                        <span style="background: #e2e8f0; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;"
+                              th:text="${assignmentItem.classes?.className ?: 'Unassigned'}"></span>
+                    </td>
+                    <td th:text="${#temporals.format(assignmentItem.dueDate, 'dd MMM yyyy')}">Due Date</td>
+                    <td th:text="${assignmentItem.maxMarks}">Max Marks</td>
+                    <td>
+                        <a th:href="@{/teacher/assignments/edit(id=${assignmentItem.id})}" class="btn btn-edit" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a th:href="@{/teacher/assignments/grade(id=${assignmentItem.id})}" class="btn btn-grade" title="Grade">
+                            <i class="fas fa-graduation-cap"></i>
+                        </a>
+                        <a th:href="@{/teacher/assignments/delete(id=${assignmentItem.id})}" class="btn btn-delete" 
+                           onclick="return confirm('Are you sure?')" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(assignments)}">
+                    <td colspan="5" style="text-align:center; padding: 30px; color: #94a3b8;">
+                        No assignments found. Use the form to create one.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

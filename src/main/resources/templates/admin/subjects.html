@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin | Subjects</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
+
+    <!-- Professional fonts & icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- ========== PROFESSIONAL STYLING – SUBJECTS MANAGEMENT ========== -->
+    <!-- Cohesive with indigo-primary admin dashboard -->
+    <style>
+        /* ---------- CSS RESET & VARIABLES ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Premium indigo palette */
+            --primary: #4f46e5;
+            --primary-light: #6366f1;
+            --primary-dark: #4338ca;
+            --primary-soft: #eef2ff;
+            
+            --bg-main: #f8fafc;
+            --bg-surface: #ffffff;
+            --border-light: #e2e8f0;
+            --border-focus: #94a3b8;
+            
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --text-on-primary: #ffffff;
+            
+            --success: #10b981;
+            --success-bg: #d1fae5;
+            --danger: #ef4444;
+            --danger-bg: #fee2e2;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            
+            --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+            --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.03);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.03);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.03);
+            
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-body);
+            line-height: 1.6;
+            font-size: 0.9375rem;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ---------- PAGE HEADER – clear navigation ---------- */
+        .page-header {
+            background: var(--bg-surface);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-xs);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .header-title i {
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+
+        .header-title h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            letter-spacing: -0.02em;
+            margin: 0;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--primary-soft);
+            color: var(--primary-dark);
+            padding: 0.5rem 1.2rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* ---------- MAIN CONTAINER – centered card ---------- */
+        .main-container {
+            max-width: 1200px;
+            margin: 2.5rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .content-card {
+            background: var(--bg-surface);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-light);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-light);
+            background: linear-gradient(to right, #fafcff, white);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-header h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0;
+        }
+
+        .card-header h2 i {
+            color: var(--primary);
+        }
+
+        /* ---------- ADD BUTTON – prominent primary ---------- */
+        .btn-add {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--primary);
+            color: white;
+            padding: 0.6rem 1.4rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: var(--transition);
+            border: 1px solid var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-add i {
+            font-size: 0.9rem;
+        }
+
+        .btn-add:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* ---------- ALERTS – premium flash messages ---------- */
+        .alert {
+            margin: 1.5rem 2rem;
+            padding: 1rem 1.2rem;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+            border: 1px solid transparent;
+        }
+
+        .alert i {
+            font-size: 1.1rem;
+        }
+
+        .alert-success {
+            background: var(--success-bg);
+            color: #065f46;
+            border-color: #a7f3d0;
+        }
+
+        .alert-error {
+            background: var(--danger-bg);
+            color: #991b1b;
+            border-color: #fecaca;
+        }
+
+        /* ---------- TABLE – modern, clean, responsive ---------- */
+        .table-wrapper {
+            padding: 0 2rem 2rem 2rem;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            min-width: 700px;
+        }
+
+        th {
+            text-align: left;
+            padding: 0.9rem 1rem;
+            background: #f9fbfd;
+            color: var(--text-heading);
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            border-bottom: 1px solid var(--border-light);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 1rem 1rem;
+            border-bottom: 1px solid var(--border-light);
+            vertical-align: middle;
+            background: white;
+            color: var(--text-body);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: #fcfdfe;
+        }
+
+        /* Subject code badge style */
+        .code-badge {
+            display: inline-block;
+            background: var(--primary-soft);
+            color: var(--primary-dark);
+            padding: 0.25rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        /* Action buttons */
+        .action-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            align-items: center;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.35rem 0.9rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            white-space: nowrap;
+            background: white;
+            border: 1px solid var(--border-light);
+            color: var(--text-body);
+            cursor: pointer;
+        }
+
+        .btn-action i {
+            font-size: 0.65rem;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+            border-color: var(--primary-light);
+        }
+
+        .btn-assign {
+            background: var(--primary-soft);
+            color: var(--primary-dark);
+            border-color: var(--primary-light);
+        }
+
+        .btn-assign:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-delete {
+            background: white;
+            color: var(--danger);
+            border-color: #fecaca;
+        }
+
+        .btn-delete:hover {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--border-light);
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media screen and (max-width: 768px) {
+            .page-header {
+                padding: 1.2rem 1.5rem;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .main-container {
+                padding: 0 1rem;
+            }
+
+            .card-header {
+                padding: 1.2rem 1.5rem;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.8rem;
+            }
+
+            .alert {
+                margin: 1rem 1.5rem;
+            }
+
+            .table-wrapper {
+                padding: 0 1.5rem 1.5rem;
+            }
+
+            /* table to cards */
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+
+            thead {
+                display: none;
+            }
+
+            tr {
+                background: white;
+                border: 1px solid var(--border-light);
+                border-radius: var(--radius-lg);
+                padding: 1.2rem;
+                margin-bottom: 1rem;
+                box-shadow: var(--shadow-sm);
+            }
+
+            td {
+                padding: 0.5rem 0;
+                border-bottom: none;
+                display: flex;
+                flex-wrap: wrap;
+                align-items: baseline;
+                gap: 0.3rem;
+            }
+
+            td::before {
+                content: attr(data-label);
+                font-weight: 700;
+                color: var(--text-heading);
+                min-width: 120px;
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 0.02em;
+            }
+
+            td:last-child {
+                border-bottom: none;
+            }
+
+            .action-group {
+                justify-content: flex-start;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .btn-add {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* ---------- UTILITIES ---------- */
+        .text-muted { color: var(--text-muted); }
+    </style>
+</head>
+<body>
+
+<!-- ========== PROFESSIONAL HEADER ========== -->
+<header class="page-header">
+    <div class="header-title">
+        <i class="fas fa-book"></i>
+        <h1>Subjects Management</h1>
+    </div>
+    <a href="/admin/dashboard" class="back-link">
+        <i class="fas fa-arrow-left"></i> Dashboard
+    </a>
+</header>
+
+<!-- ========== MAIN CONTENT CARD ========== -->
+<div class="main-container">
+    <div class="content-card">
+
+        <!-- Card Header with title and Add button -->
+        <div class="card-header">
+            <h2>
+                <i class="fas fa-list"></i> Subjects List
+            </h2>
+            <a th:href="@{/admin/subjects/new}" class="btn-add">
+                <i class="fas fa-plus-circle"></i> Add Subject
+            </a>
+        </div>
+
+        <!-- Flash Messages (success/error) -->
+        <div th:if="${success}" class="alert alert-success">
+            <i class="fas fa-check-circle"></i>
+            <span th:text="${success}">Subject added successfully</span>
+        </div>
+        <div th:if="${error}" class="alert alert-error">
+            <i class="fas fa-exclamation-circle"></i>
+            <span th:text="${error}">An error occurred</span>
+        </div>
+
+        <!-- Subjects Table -->
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Subject Name</th>
+                        <th>Code</th>
+                        <th>Assigned Class</th>
+                        <th>Assigned Teacher</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                     <tbody>
+    <tr th:each="subject : ${subjects}">
+        <td data-label="ID" th:text="${subject.id}">101</td>
+        <td data-label="Subject Name" th:text="${subject.name}" style="font-weight: 600; color: var(--text-heading);">Mathematics</td>
+        <td data-label="Code">
+            <span class="code-badge" th:text="${subject.code}">MATH101</span>
+        </td>
+        
+        <td data-label="Assigned Class">
+            <div th:if="${subject.classes != null and not #sets.isEmpty(subject.classes)}">
+                <span th:each="cls : ${subject.classes}" 
+                      th:text="${cls.className}"
+                      style="display: inline-block; background: #f1f5f9; color: #475569; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; border: 1px solid #e2e8f0; margin: 2px;">
+                    Class Name
+                </span>
+            </div>
+            <span th:if="${subject.classes == null or #sets.isEmpty(subject.classes)}" class="text-muted">—</span>
+        </td>
+
+        <td data-label="Assigned Teacher">
+            <span th:if="${subject.teacher != null}">
+                <i class="fas fa-user-tie" style="font-size: 0.8rem; color: var(--primary-light); margin-right: 4px;"></i>
+                <span th:text="${subject.teacher.fullName}">Mr. Teacher</span>
+            </span>
+            <span th:if="${subject.teacher == null}" class="text-muted">—</span>
+        </td>
+
+        <td data-label="Actions">
+            <div class="action-group">
+                <a th:href="@{/admin/subjects/assign-class/{id}(id=${subject.id})}" 
+                   class="btn-action btn-assign" title="Manage Curricula">
+                    <i class="fas fa-school"></i> Class
+                </a>
+                <a th:href="@{/admin/subjects/assign-teacher/{id}(id=${subject.id})}" 
+                   class="btn-action btn-assign" title="Manage Teacher">
+                    <i class="fas fa-chalkboard-teacher"></i> Teacher
+                </a>
+                <a th:href="@{/admin/subjects/delete/{id}(id=${subject.id})}" 
+                   class="btn-action btn-delete"
+                   onclick="return confirm('WARNING: Deleting this subject will remove it from all class curriculums. Continue?');">
+                    <i class="fas fa-trash-alt"></i> Delete
+                </a>
+            </div>
+        </td>
+    </tr>
+    
+    <tr th:if="${#lists.isEmpty(subjects)}">
+        <td colspan="6">
+            <div class="empty-state">
+                <i class="fas fa-book-open"></i>
+                <p>No subjects available in the curriculum</p>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">Click "Add Subject" to begin</span>
+            </div>
+        </td>
+    </tr>
+</tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- subtle footer -->
+    <div style="text-align: center; margin-top: 1.5rem; color: var(--text-muted); font-size: 0.75rem;">
+        <i class="fas fa-shield-alt"></i> All changes are logged · Greenfield SMS
+    </div>
+</div>
+
+</body>
+</html>

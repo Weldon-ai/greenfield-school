@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Assign Teacher | Greenfield SMS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; color: #333; }
+        .container { width: 95%; max-width: 600px; margin: 50px auto; }
+        h2 { color: #1e3a8a; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .card { background-color: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+        
+        .info-group { background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid #2563eb; margin-bottom: 25px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #475569; font-size: 0.9rem; }
+        
+        select, .readonly-box { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #d1d5db; border-radius: 6px; background-color: #fff; box-sizing: border-box; font-size: 1rem; }
+        .readonly-box { background-color: #f1f5f9; color: #1e293b; font-weight: 500; border: 1px solid #e2e8f0; }
+        
+        /* Class Tag Styling */
+        .tag-container { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
+        .class-tag { background: #dbeafe; color: #1e40af; padding: 2px 10px; border-radius: 15px; font-size: 0.8rem; font-weight: 600; }
+
+        button { background-color: #2563eb; color: white; border: none; padding: 14px 24px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; transition: all 0.2s; font-size: 1rem; box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2); }
+        button:hover { background-color: #1e40af; transform: translateY(-1px); }
+        
+        .success { background-color: #d1fae5; color: #065f46; padding: 12px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #6ee7b7; }
+        .error { background-color: #fee2e2; color: #991b1b; padding: 12px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #fca5a5; }
+        .back-btn { display: inline-flex; align-items: center; margin-bottom: 20px; text-decoration: none; color: #64748b; font-size: 0.9rem; font-weight: 500; }
+        .back-btn:hover { color: #1e3a8a; }
+        
+        @media (max-width: 480px) { .container { width: 92%; margin: 20px auto; } .card { padding: 20px; } }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <a th:href="@{/admin/subjects}" class="back-btn">
+        <i class="fas fa-arrow-left" style="margin-right: 8px;"></i> Return to Subject List
+    </a>
+
+    <h2><i class="fas fa-chalkboard-teacher"></i> Assign Lead Teacher</h2>
+
+    <div class="card">
+        <div th:if="${success}" class="success">
+            <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+        </div>
+        <div th:if="${error}" class="error">
+            <i class="fas fa-exclamation-triangle"></i> <span th:text="${error}"></span>
+        </div>
+
+        <form th:if="${subject != null}" th:action="@{/admin/subjects/assign-teacher}" method="post">
+            
+            <input type="hidden" name="subjectId" th:value="${subject.id}">
+
+            <div class="info-group">
+                <label>Subject Context:</label>
+                <div class="readonly-box">
+                    <span th:text="${subject.name}">Mathematics</span> 
+                    <small th:text="'(' + ${subject.code} + ')'" style="color: #64748b;"></small>
+                </div>
+
+                <label style="margin-top: 15px;">Active in Classes:</label>
+                <div class="tag-container">
+                    <span th:each="cls : ${subject.classes}" class="class-tag" th:text="${cls.className}">Grade 1</span>
+                    <span th:if="${#lists.isEmpty(subject.classes)}" style="font-size: 0.85rem; color: #94a3b8; font-style: italic;">Not assigned to any class curriculum</span>
+                </div>
+            </div>
+
+            <label>Currently Teaching:</label>
+            <div class="readonly-box">
+                <i class="fas fa-user" style="margin-right: 8px; color: #94a3b8;"></i>
+                <span th:text="${subject.teacher != null ? subject.teacher.fullName : 'No Teacher Assigned (Vacant)'}">Vacant</span>
+            </div>
+
+            <label for="teacherId">Select Lead Teacher:</label>
+            <select name="teacherId" id="teacherId" required>
+                <option value="" disabled selected>-- Select a qualified staff member --</option>
+                <option th:each="t : ${teachers}" 
+                        th:value="${t.id}" 
+                        th:text="${t.fullName}"
+                        th:selected="${subject.teacher != null and t.id == subject.teacher.id}">
+                </option>
+            </select>
+
+            <button type="submit">Update Teacher Assignment</button>
+        </form>
+
+        <div th:if="${subject == null}" style="text-align: center; padding: 20px;">
+            <p style="color: #ef4444; font-weight: bold;">⚠ Subject record not found.</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

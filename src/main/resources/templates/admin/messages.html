@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Messaging Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f4f6f9; }
+        h2 { color: #1e3a8a; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #2563eb; color: #fff; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        a.button, button { padding: 6px 10px; background-color: #2563eb; color: #fff; text-decoration: none; border-radius: 4px; border: none; cursor: pointer; }
+        a.button:hover, button:hover { background-color: #1e40af; }
+        .section { display: none; }
+        .active { display: block; }
+        .nav { margin-bottom: 20px; }
+        .nav a { margin-right: 10px; }
+        textarea, input, select { width: 100%; padding: 8px; margin-top: 5px; }
+        label { display: block; margin-top: 10px; }
+    </style>
+    <script th:inline="javascript">
+        function showSection(sectionId) {
+            var sections = document.getElementsByClassName('section');
+            for (var i = 0; i < sections.length; i++) {
+                sections[i].classList.remove('active');
+            }
+            document.getElementById(sectionId).classList.add('active');
+        }
+        function viewMessage(subject, sender, receiver, sentAt, body, readStatus) {
+            document.getElementById('viewSubject').textContent = subject;
+            document.getElementById('viewSender').textContent = sender;
+            document.getElementById('viewReceiver').textContent = receiver;
+            document.getElementById('viewSentAt').textContent = sentAt;
+            document.getElementById('viewBody').textContent = body;
+            document.getElementById('viewStatus').textContent = readStatus ? 'Read' : 'Unread';
+            showSection('view');
+        }
+    </script>
+</head>
+<body>
+    <h2>Admin Messaging Dashboard</h2>
+
+    <!-- ===== Navigation ===== -->
+    <div class="nav">
+        <a class="button" onclick="showSection('inbox')">Inbox</a>
+        <a class="button" onclick="showSection('sent')">Sent</a>
+        <a class="button" onclick="showSection('compose')">Compose</a>
+    </div>
+
+    <!-- ===== Inbox Section ===== -->
+    <div id="inbox" class="section active">
+        <h3>Inbox</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Subject</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Sent At</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="msg : ${messages}">
+                    <td th:text="${msg.id}"></td>
+                    <td>
+                        <a href="#" th:text="${msg.subject}" 
+                           th:onclick="'viewMessage('
+                           + '\'' + msg.subject + '\',' 
+                           + '\'' + msg.sender.fullName + '\',' 
+                           + '\'' + msg.receiver.fullName + '\',' 
+                           + '\'' + #dates.format(msg.sentAt,'dd-MM-yyyy HH:mm') + '\',' 
+                           + '\'' + msg.body.replace('\'','\\\'') + '\',' 
+                           + msg.readStatus 
+                           + ')'"></a>
+                    </td>
+                    <td th:text="${msg.sender.fullName}"></td>
+                    <td th:text="${msg.receiver.fullName}"></td>
+                    <td th:text="${#dates.format(msg.sentAt,'dd-MM-yyyy HH:mm')}"></td>
+                    <td th:text="${msg.readStatus ? 'Read' : 'Unread'}"></td>
+                    <td>
+                        <form th:action="@{/admin/messages/delete/{id}(id=${msg.id})}" method="post">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(messages)}">
+                    <td colspan="7" style="text-align:center; color:red;">No messages found</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ===== Sent Section ===== -->
+    <div id="sent" class="section">
+        <h3>Sent Messages</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Subject</th>
+                    <th>To</th>
+                    <th>Sent At</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="msg : ${sentMessages}">
+                    <td th:text="${msg.id}"></td>
+                    <td th:text="${msg.subject}"></td>
+                    <td th:text="${msg.receiver.fullName}"></td>
+                    <td th:text="${#dates.format(msg.sentAt,'dd-MM-yyyy HH:mm')}"></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(sentMessages)}">
+                    <td colspan="4" style="text-align:center; color:red;">No messages sent</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ===== Compose Section ===== -->
+    <div id="compose" class="section">
+        <h3>Compose Message</h3>
+        <form th:action="@{/admin/messages/send}" method="post">
+            <label>To:</label>
+            <select name="receiverId" required>
+                <option th:each="u : ${users}" th:value="${u.id}" th:text="${u.fullName}"></option>
+            </select>
+
+            <label>Subject:</label>
+            <input type="text" name="subject" required>
+
+            <label>Message:</label>
+            <textarea name="body" rows="6" required></textarea>
+
+            <button type="submit">Send</button>
+        </form>
+    </div>
+
+    <!-- ===== View Section ===== -->
+    <div id="view" class="section">
+        <h3>View Message</h3>
+        <p><strong>Subject:</strong> <span id="viewSubject"></span></p>
+        <p><strong>From:</strong> <span id="viewSender"></span></p>
+        <p><strong>To:</strong> <span id="viewReceiver"></span></p>
+        <p><strong>Sent At:</strong> <span id="viewSentAt"></span></p>
+        <p><strong>Status:</strong> <span id="viewStatus"></span></p>
+        <p><strong>Message:</strong></p>
+        <p id="viewBody"></p>
+        <button onclick="showSection('inbox')">Back to Inbox</button>
+    </div>
+
+</body>
+</html>

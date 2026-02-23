@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Teacher | Create Scheme</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #4f46e5; --bg: #f8fafc; --border: #e2e8f0; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); padding: 2rem; color: #1e293b; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 2.5rem; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .header { border-bottom: 2px solid var(--bg); margin-bottom: 2rem; padding-bottom: 1rem; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .full-width { grid-column: span 2; }
+        label { display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem; color: #475569; }
+        input, select, textarea { width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 0.95rem; box-sizing: border-box; }
+        textarea { height: 120px; resize: vertical; }
+        input:focus { outline: 2px solid #c7d2fe; border-color: var(--primary); }
+        .btn-submit { background: var(--primary); color: white; border: none; padding: 1rem 2rem; border-radius: 0.5rem; font-weight: 700; cursor: pointer; width: 100%; margin-top: 1.5rem; transition: 0.2s; }
+        .btn-submit:hover { background: #4338ca; transform: translateY(-1px); }
+        .back-link { text-decoration: none; color: #64748b; font-size: 0.9rem; margin-bottom: 1rem; display: inline-block; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <a th:href="@{/teacher/schemes}" class="back-link"><i class="fas fa-arrow-left"></i> Back to List</a>
+    
+    <div class="header">
+        <h1><i class="fas fa-edit" style="color: var(--primary);"></i> New Scheme of Work</h1>
+        <p style="color: #64748b;">Fill in lesson details. Once submitted, it will be sent for approval.</p>
+    </div>
+
+    <form th:action="@{/teacher/schemes/save}" th:object="${scheme}" method="post">
+        <div class="form-grid">
+            
+            <div class="form-group">
+                <label>Term</label>
+                <select th:field="*{term}" required>
+                    <option value="Term 1">Term 1</option>
+                    <option value="Term 2">Term 2</option>
+                    <option value="Term 3">Term 3</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Week Number</label>
+                <input type="number" th:field="*{weekNumber}" placeholder="e.g. 5" min="1" max="15" required>
+            </div>
+
+            <div class="form-group">
+                <label>Subject Name</label>
+                <input type="text" th:field="*{subject}" placeholder="e.g. Mathematics" required>
+            </div>
+
+            <div class="form-group">
+                <label>Target Class / Grade</label>
+                <input type="text" th:field="*{targetClass}" placeholder="e.g. Grade 7 Blue" required>
+            </div>
+
+            <div class="form-group full-width">
+                <label>Teacher Name (Official)</label>
+                <input type="text" th:field="*{teacherName}" placeholder="Enter your full name" required>
+            </div>
+            
+            <div class="form-group full-width">
+                <label>Lesson Topic</label>
+                <input type="text" th:field="*{topic}" placeholder="e.g. Introduction to Algebraic Expressions" required>
+            </div>
+
+            <div class="form-group full-width">
+                <label>Learning Objectives</label>
+                <textarea th:field="*{objectives}" placeholder="Describe what the students will achieve..."></textarea>
+            </div>
+
+            <div class="form-group full-width">
+                <label>Teaching Resources & Aids</label>
+                <input type="text" th:field="*{resources}" placeholder="e.g. Chalkboard, Charts, Geometric Sets">
+            </div>
+        </div>
+
+        <button type="submit" class="btn-submit">
+            <i class="fas fa-paper-plane"></i> Submit for Approval
+        </button>
+    </form>
+</div>
+
+</body>
+</html>

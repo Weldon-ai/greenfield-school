@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Error [[${status}]] - GreenField School</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .error-container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 50px 40px;
+            text-align: center;
+            max-width: 500px;
+        }
+
+        h1 {
+            font-size: 6em;
+            margin: 0;
+            color: 
+                [[${status} == 404 ? '#e74c3c' : 
+                  (${status} == 500 ? '#c0392b' : '#f39c12')]];
+        }
+
+        h2 {
+            font-size: 2em;
+            margin: 15px 0;
+        }
+
+        p {
+            font-size: 1.2em;
+            margin: 10px 0 20px 0;
+            color: #555;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 25px;
+            background-color: #3498db;
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        a:hover {
+            background-color: #2980b9;
+        }
+
+        /* Optional: small icon before message */
+        .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            color: 
+                [[${status} == 404 ? '#e74c3c' : 
+                  (${status} == 500 ? '#c0392b' : '#f39c12')]];
+        }
+
+        /* Responsive for small screens */
+        @media (max-width: 600px) {
+            h1 { font-size: 4em; }
+            h2 { font-size: 1.5em; }
+            .error-container { padding: 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="icon">
+            <span th:text="${status == 404 ? '🛑' : (status == 500 ? '💥' : '⚠️')}"></span>
+        </div>
+        <h1 th:text="${status}">Error</h1>
+        <h2 th:text="${error}">Oops!</h2>
+        <p th:text="${message}">Something went wrong. Please try again later.</p>
+        <a href="/">Return to Home</a>
+    </div>
+</body>
+</html>

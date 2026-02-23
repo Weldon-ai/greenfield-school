@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"> <!-- Character encoding -->
+    <title>Class Details</title> <!-- Page title -->
+
+    <!-- Embedded CSS -->
+    <style>
+        /* Body and overall layout */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f7f7f7;
+            color: #333;
+        }
+
+        h1 {
+            color: #2c3e50;
+        }
+
+        h2, h3 {
+            color: #34495e;
+            margin-top: 10px;
+        }
+
+        /* Table styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background-color: #fff;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #2c3e50;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #e0e0e0;
+        }
+
+        /* Links */
+        a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Paragraphs and messages */
+        p {
+            font-size: 14px;
+        }
+
+        /* Error / empty state styling */
+        div[th\\:if] p {
+            color: #c0392b;
+            font-weight: bold;
+        }
+
+        /* Back link styling */
+        .back-link {
+            margin-top: 20px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Class Details</h1> <!-- Page heading -->
+
+<!-- Check if classObj exists -->
+<div th:if="${classObj != null}">
+    <p><strong>Class ID:</strong> <span th:text="${classObj.id}">1</span></p> <!-- Class ID -->
+    <p><strong>Class Name:</strong> <span th:text="${classObj.name}">Sample Class</span></p> <!-- Class Name -->
+
+    <!-- Optional: list students if classObj has a students list -->
+    <div th:if="${classObj.students != null and #lists.isNotEmpty(classObj.students)}">
+        <h3>Students:</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Student ID</th>
+                    <th>Student Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="student : ${classObj.students}">
+                    <td th:text="${student.id}">1</td>
+                    <td th:text="${student.name}">Student Name</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Message if class has no students -->
+    <div th:if="${classObj.students == null or #lists.isEmpty(classObj.students)}">
+        <p>No students assigned to this class yet.</p>
+    </div>
+</div>
+
+<!-- Message if classObj is null -->
+<div th:if="${classObj == null}">
+    <p>Class not found or invalid ID.</p> <!-- Safe null handling -->
+</div>
+
+<!-- Back link -->
+<p class="back-link"><a th:href="@{/teacher/classes}">Back to My Classes</a></p> <!-- Navigate back -->
+
+</body>
+</html>

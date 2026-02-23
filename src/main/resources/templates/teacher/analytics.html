@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Teacher Analytics | Greenfield SMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; margin: 30px; background-color: #f8fafc; }
+        .stats-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .stat-card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; }
+        .stat-card i { font-size: 2rem; color: #3b82f6; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h1><i class="fas fa-chart-line"></i> Assignment Analytics</h1>
+    <div class="stats-container">
+        <div class="stat-card">
+            <i class="fas fa-tasks"></i>
+            <h3>Total Assignments</h3>
+            <p>Coming Soon...</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-user-graduate"></i>
+            <h3>Submission Rate</h3>
+            <p>Coming Soon...</p>
+        </div>
+    </div>
+    <br>
+    <a th:href="@{/teacher/assignments}" style="color: #64748b;">← Back to Assignments</a>
+</body>
+</html>

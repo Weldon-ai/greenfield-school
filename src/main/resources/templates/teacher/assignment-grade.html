@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Grade Submissions | Greenfield SMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; margin: 30px; background-color: #f8fafc; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        h1 { color: #1e3a8a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+        .submission-card { border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; margin-bottom: 20px; background: #fcfcfc; }
+        .pdf-link { color: #ef4444; font-weight: bold; text-decoration: none; display: inline-block; margin: 10px 0; }
+        .form-group { margin-top: 15px; }
+        label { display: block; font-weight: 600; margin-bottom: 5px; }
+        input[type="number"], textarea { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; }
+        .btn { padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; }
+        .btn-submit { background: #10b981; }
+        .btn-back { background: #64748b; text-decoration: none; display: inline-block; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1><i class="fas fa-edit"></i> Grade Submissions: <span th:text="${assignment.title}"></span></h1>
+    
+    <div th:if="${#lists.isEmpty(submissions)}" style="text-align: center; padding: 40px;">
+        <p>No submissions yet for this assignment.</p>
+    </div>
+
+    <div th:each="sub : ${submissions}" class="submission-card">
+        <h3 th:text="${sub.student.user.fullName}">Student Name</h3>
+        <p><strong>Submitted At:</strong> <span th:text="${#temporals.format(sub.submittedAt, 'dd MMM yyyy, HH:mm')}"></span></p>
+        
+        <div th:if="${sub.pdfPath}">
+            <a th:href="@{'/files/' + ${sub.pdfPath}}" target="_blank" class="pdf-link">
+                <i class="fas fa-file-pdf"></i> View Submitted PDF
+            </a>
+        </div>
+        
+        <p th:if="${sub.content}" th:text="'Comments: ' + ${sub.content}" style="font-style: italic; color: #64748b;"></p>
+
+        <form th:action="@{/teacher/assignments/grade/submit}" method="post">
+            <input type="hidden" name="submissionId" th:value="${sub.id}"/>
+            
+            <div class="form-group">
+                <label>Marks (Max: <span th:text="${assignment.maxMarks}"></span>)</label>
+                <input type="number" name="marks" th:value="${sub.marks}" th:attr="max=${assignment.maxMarks}" required/>
+            </div>
+
+            <div class="form-group">
+                <label>Feedback</label>
+                <textarea name="feedback" rows="2" th:text="${sub.feedback}" placeholder="Enter feedback here..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-submit" style="margin-top: 10px;">Save Grade</button>
+        </form>
+    </div>
+
+    <a th:href="@{/teacher/assignments}" class="btn btn-back">Back to Assignments</a>
+</div>
+
+</body>
+</html>

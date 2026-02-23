@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Teacher | My Schemes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: var(--bg); 
+            padding: 2rem; 
+            color: var(--text-main);
+        }
+
+        .card { 
+            background: white; 
+            border-radius: 16px; 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); 
+            padding: 2rem; 
+            border: 1px solid #e2e8f0;
+        }
+
+        .header-section { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 2rem; 
+        }
+
+        .btn-new { 
+            background: var(--primary); 
+            color: white; 
+            padding: 10px 24px; 
+            border-radius: 30px; 
+            text-decoration: none; 
+            font-weight: 600;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-new:hover { background: var(--primary-hover); transform: translateY(-1px); }
+
+        table { width: 100%; border-collapse: collapse; }
+        
+        th { 
+            text-align: left; 
+            padding: 16px; 
+            font-size: 0.75rem; 
+            text-transform: uppercase; 
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        td { padding: 16px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+
+        tr:hover { background-color: #fcfdfe; }
+
+        .ref-code { font-family: 'Courier New', monospace; font-weight: 700; color: var(--primary); }
+
+        /* Status Badges */
+        .status-badge { 
+            padding: 6px 12px; 
+            border-radius: 30px; 
+            font-size: 0.75rem; 
+            font-weight: 700; 
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .status-PENDING { background: #fef3c7; color: #92400e; }
+        .status-APPROVED { background: #d1fae5; color: #065f46; }
+        .status-REJECTED { background: #fee2e2; color: #991b1b; }
+
+        .action-links { display: flex; gap: 12px; }
+
+        .btn-action {
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.2s;
+        }
+
+        .btn-print { color: var(--primary); }
+        .btn-print:hover { color: var(--primary-hover); text-decoration: underline; }
+
+        .empty-state { text-align: center; padding: 4rem 0; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header-section">
+        <div>
+            <h2 style="margin:0;">My Schemes of Work</h2>
+            <p style="color: var(--text-muted); margin: 4px 0 0 0;">Manage and print your lesson plans.</p>
+        </div>
+        <a th:href="@{/teacher/schemes/new}" class="btn-new">
+            <i class="fas fa-plus"></i> Create New Scheme
+        </a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Reference</th>
+                <th>Subject & Class</th>
+                <th>Timeline</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="scheme : ${schemes}">
+                <td>
+                    <span class="ref-code" th:text="${scheme.referenceNumber}">SCH-12345</span>
+                </td>
+                <td>
+                    <div style="font-weight: 600;" th:text="${scheme.subject}">Mathematics</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);" th:text="${scheme.targetClass}">Grade 7 Blue</div>
+                </td>
+                <td>
+                    <div th:text="${scheme.term}">Term 1</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);" th:text="'Week ' + ${scheme.weekNumber}">Week 5</div>
+                </td>
+                <td>
+                    <span th:class="'status-badge status-' + ${scheme.status}">
+                        <i class="fas fa-circle" style="font-size: 0.5rem;"></i>
+                        <span th:text="${scheme.status}">PENDING</span>
+                    </span>
+                </td>
+                <td>
+                    <div class="action-links">
+                        <a th:href="@{/teacher/schemes/print/{id}(id=${scheme.id})}" target="_blank" class="btn-action btn-print">
+                            <i class="fas fa-print"></i> Print PDF
+                        </a>
+                    </div>
+                </td>
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(schemes)}">
+                <td colspan="5">
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open fa-3x" style="margin-bottom: 1rem; opacity: 0.3;"></i>
+                        <p>No schemes found. Click "Create New Scheme" to begin.</p>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>
