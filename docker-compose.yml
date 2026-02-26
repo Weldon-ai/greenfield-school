@@ -1,17 +1,18 @@
+version: "3.9"
+
 services:
-  mysql:
-    image: mysql:8.1
-    container_name: greenfield-mysql
+  postgres:
+    image: postgres:15
+    container_name: greenfield-postgres
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: yourpassword
-      MYSQL_DATABASE: greenfield_school
-      MYSQL_USER: cheseh2005
-      MYSQL_PASSWORD: yourpassword
+      POSTGRES_DB: greenfield
+      POSTGRES_USER: cheseh2005
+      POSTGRES_PASSWORD: yourpassword
     volumes:
-      - mysql-data:/var/lib/mysql
+      - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD-SHELL", "pg_isready -U cheseh2005"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -21,14 +22,14 @@ services:
     container_name: greenfield-app
     restart: unless-stopped
     depends_on:
-      mysql:
+      postgres:
         condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/greenfield_school
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/greenfield
       SPRING_DATASOURCE_USERNAME: cheseh2005
       SPRING_DATASOURCE_PASSWORD: yourpassword
     ports:
       - "8080:8080"
 
 volumes:
-  mysql-data:
+  postgres-data:
