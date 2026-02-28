@@ -1,14 +1,31 @@
-# ===== Step 1: Use a lightweight JDK 17 image =====
-FROM eclipse-temurin:17-jdk-jammy
+# ===============================
+# Stage 1 — Build the application
+# ===============================
+FROM maven:3.9.6-eclipse-temurin-17 AS builder
 
-# ===== Step 2: Set working directory inside container =====
 WORKDIR /app
 
-# ===== Step 3: Copy built JAR to container =====
-COPY target/greenfield-school-0.0.1-SNAPSHOT.jar app.jar
+# Copy pom first for dependency caching
+COPY pom.xml .
+RUN mvn dependency:go-offline
 
-# ===== Step 4: Expose port (must match your Spring Boot server.port) =====
+# Copy source code
+COPY src ./src
+
+# Build the jar
+RUN mvn clean package -DskipTests
+
+
+# ===============================
+# Stage 2 — Run the application
+# ===============================
+FROM eclipse-temurin:17-jdk-jammy
+
+WORKDIR /app
+
+# Copy built jar from builder stage
+COPY --from=builder /app/target/*.jar app.jar
+
 EXPOSE 8080
 
-# ===== Step 5: Run the Spring Boot app =====
 ENTRYPOINT ["java","-jar","app.jar"]
