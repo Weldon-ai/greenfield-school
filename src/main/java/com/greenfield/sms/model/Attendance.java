@@ -9,8 +9,11 @@ import java.time.temporal.ChronoUnit;
 @Table(
     name = "attendance",
     uniqueConstraints = {
-        // Updated to use class_id to match the new relationship
         @UniqueConstraint(columnNames = {"student_id", "class_id", "date"})
+    },
+    indexes = {
+        @Index(name = "idx_student_id", columnList = "student_id"),
+        @Index(name = "idx_class_id", columnList = "class_id")
     }
 )
 public class Attendance {
@@ -24,39 +27,36 @@ public class Attendance {
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 
-    /** * UPDATED: Changed from SchoolClass to Classes 
-     * The field name 'classes' now matches findByClasses in the Repository
-     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_id", nullable = false)
     private Classes classes;
 
     // ================= ATTENDANCE DATA =================
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "DATE")
     private LocalDate date;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private boolean present;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "recorded_by", nullable = false)
+    @Column(name = "recorded_by", nullable = false, length = 20)
     private RecordedBy recordedBy;
 
     @Column(name = "recorded_by_user_id")
     private Long recordedByUserId;
 
     // ================= LOCKING SUPPORT =================
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private boolean locked = false;
 
-    @Column(name = "locked_at")
+    @Column(name = "locked_at", columnDefinition = "DATETIME")
     private LocalDateTime lockedAt;
 
     // ================= AUDIT FIELDS =================
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "DATETIME")
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", columnDefinition = "DATETIME")
     private LocalDateTime updatedAt;
 
     // ================= CONSTRUCTORS =================
@@ -72,7 +72,7 @@ public class Attendance {
         this.recordedBy = recordedBy;
     }
 
-    // ================= JPA LIFECYCLE =================
+    // ================= LIFECYCLE =================
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();

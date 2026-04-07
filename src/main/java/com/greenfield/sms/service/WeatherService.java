@@ -14,7 +14,8 @@ import java.util.Map;
 @Service
 public class WeatherService {
 
-    @Value("${weather.api.key}")
+    // Fallback to empty string if the property is missing
+    @Value("${weather.api.key:}")
     private String apiKey;
 
     private final RestTemplate restTemplate;
@@ -23,11 +24,15 @@ public class WeatherService {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(5000); // 5s timeout
         factory.setReadTimeout(5000);
-
         this.restTemplate = new RestTemplate(factory);
     }
 
     public Map<String, Object> getWeather(String city) {
+        // If API key is missing, return fallback
+        if (apiKey == null || apiKey.isEmpty()) {
+            System.err.println("Weather API key missing, returning fallback weather data");
+            return getFallbackWeather();
+        }
 
         try {
             String encodedCity = URLEncoder.encode(city, StandardCharsets.UTF_8);

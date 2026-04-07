@@ -8,28 +8,25 @@ import java.util.Set;
 @Table(name = "classes")
 public class Classes {
 
-    // ================= PRIMARY KEY =================
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // ================= BASIC FIELDS =================
-    @Column(name = "class_name", nullable = false)
+    @Column(name = "class_name", nullable = false, length = 100)
     private String className;
 
-    @Column(name = "class_code", nullable = false, unique = true)
+    @Column(name = "class_code", nullable = false, unique = true, length = 20)
     private String classCode;
 
-    @Column(name = "schedule")
+    @Column(name = "schedule", length = 255)
     private String schedule;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "class_level", nullable = false)
+    @Column(name = "class_level", nullable = false, length = 20)
     private ClassLevel classLevel;
 
-    // ================= RELATIONSHIPS =================
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "teacher_id")
+    @JoinColumn(name = "teacher_id", foreignKey = @ForeignKey(name = "fk_teacher"))
     private Teacher teacher;
 
     @OneToMany(mappedBy = "classes", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -43,7 +40,6 @@ public class Classes {
     )
     private Set<Subject> subjects = new HashSet<>();
 
-    // ================= CONSTRUCTORS =================
     public Classes() {}
 
     public Classes(String className, String classCode, String schedule, ClassLevel classLevel) {
@@ -53,60 +49,25 @@ public class Classes {
         this.classLevel = classLevel;
     }
 
-    // ================= GETTERS & SETTERS =================
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public String getClassName() { return className; }
+    public void setClassName(String className) { this.className = className; }
 
-    public String getClassName() {
-        return className;
-    }
+    public String getClassCode() { return classCode; }
+    public void setClassCode(String classCode) { this.classCode = classCode; }
 
-    public void setClassName(String className) {
-        this.className = className;
-    }
+    public String getSchedule() { return schedule; }
+    public void setSchedule(String schedule) { this.schedule = schedule; }
 
-    public String getClassCode() {
-        return classCode;
-    }
+    public ClassLevel getClassLevel() { return classLevel; }
+    public void setClassLevel(ClassLevel classLevel) { this.classLevel = classLevel; }
 
-    public void setClassCode(String classCode) {
-        this.classCode = classCode;
-    }
+    public Teacher getTeacher() { return teacher; }
+    public void setTeacher(Teacher teacher) { this.teacher = teacher; }
 
-    public String getSchedule() {
-        return schedule;
-    }
+    public Set<Student> getStudents() { return students; }
+    public Set<Subject> getSubjects() { return subjects; }
 
-    public void setSchedule(String schedule) {
-        this.schedule = schedule;
-    }
-
-    public ClassLevel getClassLevel() {
-        return classLevel;
-    }
-
-    public void setClassLevel(ClassLevel classLevel) {
-        this.classLevel = classLevel;
-    }
-
-    public Teacher getTeacher() {
-        return teacher;
-    }
-
-    public void setTeacher(Teacher teacher) {
-        this.teacher = teacher;
-    }
-
-    public Set<Student> getStudents() {
-        return students;
-    }
-
-    public Set<Subject> getSubjects() {
-        return subjects;
-    }
-
-    // ================= CONVENIENCE METHODS =================
     public void addStudent(Student student) {
         if (student != null) {
             students.add(student);
@@ -142,7 +103,6 @@ public class Classes {
         }
     }
 
-    // ================= DISPLAY METHODS =================
     public String getDisplayName() {
         return className + " (" + classCode + ")";
     }
@@ -156,12 +116,6 @@ public class Classes {
                 '}';
     }
 
-    // ================= THYMELEAF COMPATIBLE GETTERS =================
-    public String getName() {
-        return this.className;
-    }
-
-    public String getCode() {   // <-- add this!
-        return this.classCode;
-    }
+    public String getName() { return className; }
+    public String getCode() { return classCode; }
 }

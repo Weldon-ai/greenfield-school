@@ -7,38 +7,41 @@ import java.time.LocalDate;
 @Table(name = "assignments")
 public class Assignment {
 
+    // ===== Primary Key =====
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id; // AUTO_INCREMENT in MySQL
 
-    @Column(nullable = false)
+    // ===== Basic Fields =====
+    @Column(nullable = false, length = 255)
     private String title;
 
     @Column(length = 1000)
     private String description;
 
+    @Column(name = "due_date", columnDefinition = "DATE")
     private LocalDate dueDate;
 
+    @Column(name = "max_marks", nullable = false)
     private int maxMarks;
 
-    // ================= UPDATED RELATION =================
-    /**
-     * Relationship updated to reference the 'Classes' entity
-     */
+    // ===== ManyToOne Relationship =====
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "class_id") 
-    private Classes classes; // Renamed type from SchoolClass to Classes
+    @JoinColumn(name = "class_id", nullable = false) // index and FK
+    private Classes classes;
 
+    // ===== Enum Status =====
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private AssignmentStatus status = AssignmentStatus.DRAFT;
+    @Column(nullable = false, length = 20)
+    private AssignmentStatus status;
 
+    @Column(name = "marks_awarded")
     private Integer marksAwarded;
 
     @Column(length = 1000)
     private String feedback;
 
-    // ================= CONSTRUCTORS =================
+    // ===== Constructors =====
     public Assignment() {}
 
     public Assignment(String title, String description, LocalDate dueDate, int maxMarks, Classes classes) {
@@ -47,10 +50,9 @@ public class Assignment {
         this.dueDate = dueDate;
         this.maxMarks = maxMarks;
         this.classes = classes;
-        this.status = AssignmentStatus.DRAFT;
     }
 
-    // ================= GETTERS & SETTERS =================
+    // ===== Getters & Setters =====
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -66,9 +68,6 @@ public class Assignment {
     public int getMaxMarks() { return maxMarks; }
     public void setMaxMarks(int maxMarks) { this.maxMarks = maxMarks; }
 
-    /**
-     * Getter returns 'Classes' type to match the new model name
-     */
     public Classes getClasses() { return classes; }
     public void setClasses(Classes classes) { this.classes = classes; }
 
@@ -81,7 +80,15 @@ public class Assignment {
     public String getFeedback() { return feedback; }
     public void setFeedback(String feedback) { this.feedback = feedback; }
 
-    // ================= TO STRING =================
+    // ===== Lifecycle Hooks =====
+    @PrePersist
+    public void prePersist() {
+        if (status == null) {
+            status = AssignmentStatus.DRAFT; // default enum value
+        }
+    }
+
+    // ===== ToString =====
     @Override
     public String toString() {
         return "Assignment{" +

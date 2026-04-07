@@ -12,9 +12,11 @@ public class SchoolSettings {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-@Lob
-@Column(columnDefinition = "LONGBLOB")
-private byte[] logoFile;
+
+    // ✅ FIX: Remove LONGBLOB, let Hibernate map to BYTEA
+    @Lob
+    @Column(name = "logo_file")
+    private byte[] logoFile;
 
     // ===== School Identity =====
     @NotBlank(message = "School name must not be blank")
@@ -29,10 +31,7 @@ private byte[] logoFile;
     private String contactEmail;
     private String contactPhone;
 
-    // ===== Logo =====
-    @Lob
-    @Column(columnDefinition = "LONGBLOB")
-    
+    // ===== Logo Metadata (NOT LOB) =====
     private String logoFileName;
     private String logoFileType;
 
@@ -49,7 +48,10 @@ private byte[] logoFile;
 
     // ===== System Settings =====
     private boolean maintenanceMode = false;
+
+    @Column(length = 1000)
     private String maintenanceMessage;
+
     private String theme;
     private boolean darkMode = false;
 
@@ -64,6 +66,9 @@ private byte[] logoFile;
     // ===== Getters & Setters =====
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+
+    public byte[] getLogoFile() { return logoFile; }
+    public void setLogoFile(byte[] logoFile) { this.logoFile = logoFile; }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
@@ -88,9 +93,6 @@ private byte[] logoFile;
 
     public String getContactPhone() { return contactPhone; }
     public void setContactPhone(String contactPhone) { this.contactPhone = contactPhone; }
-
-    public byte[] getLogoFile() { return logoFile; }
-    public void setLogoFile(byte[] logoFile) { this.logoFile = logoFile; }
 
     public String getLogoFileName() { return logoFileName; }
     public void setLogoFileName(String logoFileName) { this.logoFileName = logoFileName; }

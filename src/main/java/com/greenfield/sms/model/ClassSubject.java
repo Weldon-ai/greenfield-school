@@ -1,32 +1,46 @@
-package com.greenfield.sms.model; // Package declaration
+package com.greenfield.sms.model;
 
-import jakarta.persistence.*; // JPA imports
+import jakarta.persistence.*;
 
-@Entity // Marks as entity
-@Table(name = "class_subjects") // Join table
+@Entity
+@Table(
+    name = "class_subjects",
+    uniqueConstraints = @UniqueConstraint(columnNames = {"class_id", "subject_id", "teacher_id"})
+)
 public class ClassSubject {
 
-    @Id // Primary key
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto increment
-    private Long id; // Mapping ID
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @ManyToOne // Many mappings to one class
-    @JoinColumn(name = "class_id") // FK column
-    private Classes classes; // Class entity
+    @ManyToOne
+    @JoinColumn(name = "class_id", nullable = false, foreignKey = @ForeignKey(name = "fk_class_subject_class"))
+    private Classes classes;
 
-    @ManyToOne // Many mappings to one subject
-    @JoinColumn(name = "subject_id") // FK column
-    private Subject subject; // Subject entity
+    @ManyToOne
+    @JoinColumn(name = "subject_id", nullable = false, foreignKey = @ForeignKey(name = "fk_class_subject_subject"))
+    private Subject subject;
 
-    @ManyToOne // Many mappings to one teacher
-    @JoinColumn(name = "teacher_id") // FK column
-    private Teacher teacher; // Teacher entity
+    @ManyToOne
+    @JoinColumn(name = "teacher_id", nullable = false, foreignKey = @ForeignKey(name = "fk_class_subject_teacher"))
+    private Teacher teacher;
 
-    private boolean compulsory; // Compulsory or optional flag
+    @Column(nullable = false)
+    private boolean compulsory = false;
 
-    private boolean active = true; // Enable / disable assignment
+    @Column(nullable = false)
+    private boolean active = true;
 
-    // Getter and setter for all fields
+    public ClassSubject() {}
+
+    public ClassSubject(Classes classes, Subject subject, Teacher teacher, boolean compulsory) {
+        this.classes = classes;
+        this.subject = subject;
+        this.teacher = teacher;
+        this.compulsory = compulsory;
+        this.active = true;
+    }
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

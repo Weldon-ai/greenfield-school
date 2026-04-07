@@ -1,3 +1,5 @@
+
+
 package com.greenfield.sms.model;
 
 import jakarta.persistence.*;
@@ -9,21 +11,25 @@ public class Admin {
 
     // ===== Primary Key =====
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // MySQL AUTO_INCREMENT
     private Long id;
 
     // ===== Link to User =====
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY) // Avoid ALL cascade for existing users
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
     // ===== Audit Fields =====
-    @Column(updatable = false)
+    @Column(name = "created_at", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
 
+    @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private LocalDateTime updatedAt;
 
+    @Column(name = "created_by", length = 100)
     private String createdBy;
+
+    @Column(name = "updated_by", length = 100)
     private String updatedBy;
 
     // ===== Constructors =====
@@ -54,8 +60,8 @@ public class Admin {
     // ===== Lifecycle Hooks =====
     @PrePersist
     public void prePersist() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
+        if (createdAt == null) createdAt = LocalDateTime.now();
+        if (updatedAt == null) updatedAt = LocalDateTime.now();
     }
 
     @PreUpdate

@@ -12,25 +12,43 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationSuccessHandler successHandler) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http,
+                                           AuthenticationSuccessHandler successHandler) throws Exception {
+
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                // Public pages before login
-                .requestMatchers("/", "/home", "/login", "/register", "/css/**", "/js/**", "/images/**").permitAll()
-                // Role-based secured pages
+
+                // PUBLIC PAGES
+                .requestMatchers(
+                        "/",
+                        "/home",
+                        "/login",
+                        "/register",
+                        "/css/**",
+                        "/js/**",
+                        "/images/**"
+                ).permitAll()
+
+                // Required for Spring Boot Admin monitoring
+                .requestMatchers("/actuator/**").permitAll()
+
+                // ROLE BASED ACCESS
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/teacher/**").hasRole("TEACHER")
                 .requestMatchers("/student/**").hasRole("STUDENT")
                 .requestMatchers("/parent/**").hasRole("PARENT")
+
                 .anyRequest().authenticated()
             )
+
             .formLogin(form -> form
                 .loginPage("/login")
                 .successHandler(successHandler)
-                .failureUrl("/login?error=true") // show login error
+                .failureUrl("/login?error=true")
                 .permitAll()
             )
+
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login?logout")
@@ -49,17 +67,33 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationSuccessHandler myAuthenticationSuccessHandler() {
+
         return (request, response, authentication) -> {
+
             String redirectUrl = "/login";
 
-            // Redirect based on role
             for (var authority : authentication.getAuthorities()) {
+
                 String role = authority.getAuthority();
-                switch (role) {
-                    case "ROLE_ADMIN" -> { redirectUrl = "/admin/dashboard"; break; }
-                    case "ROLE_TEACHER" -> { redirectUrl = "/teacher/dashboard"; break; }
-                    case "ROLE_STUDENT" -> { redirectUrl = "/student/dashboard"; break; }
-                    case "ROLE_PARENT" -> { redirectUrl = "/parent/dashboard"; break; }
+
+                if (role.equals("ROLE_ADMIN")) {
+                    redirectUrl = "/admin/dashboard";
+                    break;
+                }
+
+                if (role.equals("ROLE_TEACHER")) {
+                    redirectUrl = "/teacher/dashboard";
+                    break;
+                }
+
+                if (role.equals("ROLE_STUDENT")) {
+                    redirectUrl = "/student/dashboard";
+                    break;
+                }
+
+                if (role.equals("ROLE_PARENT")) {
+                    redirectUrl = "/parent/dashboard";
+                    break;
                 }
             }
 
